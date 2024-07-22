@@ -1,25 +1,26 @@
-public class Clientes {
-    int cedula;
+public class Empleados {
+    String codigo;
     String nombre;
     String apellido;
     String correo;
     String contrasenia;
-    /*Constructores*/
-    public Clientes() {}
-    public Clientes(int cedula, String nombre, String apellido, String correo, String contrasenia) {
-        this.cedula = cedula;
+    /*Contructores*/
+    public Empleados() {}
+    public Empleados(String codigo, String nombre, String apellido, String correo, String contrasenia) {
+        this.codigo = codigo;
         this.nombre = nombre;
         this.apellido = apellido;
         this.correo = correo;
         this.contrasenia = contrasenia;
     }
+    /*Getters y setters*/
 
-    public int getCedula() {
-        return cedula;
+    public String getCodigo() {
+        return codigo;
     }
 
-    public void setCedula(int cedula) {
-        this.cedula = cedula;
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     public String getNombre() {
