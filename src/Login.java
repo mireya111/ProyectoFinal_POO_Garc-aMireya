@@ -94,6 +94,30 @@ public class Login {
                 }
             }
         });
+        registroClienteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame();
+                frame.setContentPane(new RegistroClientes().registroclientes);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(800, 600);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+                frame1.setVisible(false);
+            }
+        });
+        registroEmpleadosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame();
+                frame.setContentPane(new RegistroDuenio().registrarempleado);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(800, 600);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+                frame1.setVisible(false);
+            }
+        });
     }
 }
 
