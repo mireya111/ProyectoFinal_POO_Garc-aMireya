@@ -43,9 +43,7 @@ public class Login {
                     boolean clienteEncontrado = false;
                     boolean empleadoEncontrado = false;
 
-                    System.out.println("Debug: Buscando en la colección de clientes...");
                     for (Document documento : documento1) {
-                        System.out.println("Documento cliente: " + documento.toJson());
                         if (documento.getString("correo").equals(clienteValidacion.getCorreo()) &&
                                 documento.getString("contraseña").equals(clienteValidacion.getContrasenia())) {
                             clienteEncontrado = true;
@@ -54,7 +52,6 @@ public class Login {
                     }
 
                     if (!clienteEncontrado) {
-                        System.out.println("Debug: Buscando en la colección de empleados...");
                         for (Document documento : documento2) {
                             System.out.println("Documento empleado: " + documento.toJson());
                             if (documento.getString("correo").equals(empleadoValidacion.getCorreo()) &&

@@ -30,10 +30,10 @@ public class RegistroClientes {
                 clienteNuevo.setCorreo(correo.getText());
                 clienteNuevo.setContrasenia(contra.getText());
                 /*Linea de conexión*/
-                try(MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")){
+                try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                     MongoDatabase db = mongoClient.getDatabase("Proyectofinalpoo");
                     MongoCollection<Document> collection = db.getCollection("clientes");
-                    Document registroClientes = new Document("cedula",clienteNuevo.getCedula())
+                    Document registroClientes = new Document("cedula", clienteNuevo.getCedula())
                             .append("nombre", clienteNuevo.getNombre())
                             .append("apellido", clienteNuevo.getApellido())
                             .append("correo", clienteNuevo.getCorreo())
@@ -47,3 +47,4 @@ public class RegistroClientes {
         });
     }
 }
+
