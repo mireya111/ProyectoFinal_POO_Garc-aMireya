@@ -2,19 +2,30 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class Productos {
+    int codigo;
     String nombre;
     int cantidadDisponible;
     double precio;
     File imagen;
     /*Constructores*/
     public Productos(){}
-    public Productos(String nombre, int cantidadDisponible, double precio, File imagen) {
+    public Productos(int codigo, String nombre, int cantidadDisponible, double precio, File imagen) {
+        this.codigo = codigo;
         this.nombre = nombre;
         this.cantidadDisponible = cantidadDisponible;
         this.precio = precio;
         this.imagen = imagen;
     }
     /*Setters y getters*/
+
+    public int getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(int codigo) {
+        this.codigo = codigo;
+    }
+
     public String getNombre() {
         return nombre;
     }
