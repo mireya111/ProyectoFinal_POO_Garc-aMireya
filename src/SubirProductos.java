@@ -29,6 +29,7 @@ public class SubirProductos {
     private JButton eliminarProductoButton;
     private JTextField codigoProducto;
     private JLabel errorCodigo;
+    private JButton borrarTextoDelFormularioButton;
     public File selectFile;
 
     public SubirProductos() {
