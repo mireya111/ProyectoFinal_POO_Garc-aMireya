@@ -11,6 +11,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoClients;
 import org.bson.Document;
 
+
 public class RegistroClientes {
     private JTextField cedula;
     public JPanel registroclientes;
@@ -46,6 +47,7 @@ public class RegistroClientes {
                     try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                         MongoDatabase db = mongoClient.getDatabase("Proyectofinalpoo");
                         MongoCollection<Document> collection = db.getCollection("clientes");
+                        /*String contraseniaEncriptada = hashPassword(clienteNuevo.getContrasenia());*/
                         Document registroClientes = new Document("cedula", clienteNuevo.getCedula())
                                 .append("nombre", clienteNuevo.getNombre())
                                 .append("apellido", clienteNuevo.getApellido())
@@ -61,6 +63,11 @@ public class RegistroClientes {
             }
         });
     }
+
+    /*private String hashPassword(String contrasenia) {
+
+    }*/
+
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.pack();

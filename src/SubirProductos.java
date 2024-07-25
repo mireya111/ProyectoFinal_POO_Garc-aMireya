@@ -1,5 +1,6 @@
 import com.mongodb.MongoException;
 import com.mongodb.client.*;
+import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 
 import javax.imageio.ImageIO;
@@ -29,15 +30,33 @@ public class SubirProductos {
     private JButton eliminarProductoButton;
     private JTextField codigoProducto;
     private JLabel errorCodigo;
-    private JButton borrarTextoDelFormularioButton;
+    private JButton borrarInformaciónDelFormularioButton;
+    private JLabel errorTabla;
     public File selectFile;
-
+    /*Definir el tipo de dato que almacenara cada columna de la tabla*/
+    DefaultTableModel modelo = new DefaultTableModel() {
+        @Override
+        public Class<?> getColumnClass(int column) {
+            if (column == 0){
+                return Integer.class;
+            } else if (column == 1) {
+                return String.class;
+            } else if (column == 2) {
+                return Integer.class;
+            } else if (column == 3) {
+                return Double.class;
+            } else if (column == 4) {
+                return ImageIcon.class;
+            }
+            return null;
+        }
+    };
     public SubirProductos() {
         /*Para acceder a los archivos y que se muestre antes de subir el producto*/
         explorarImagenes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                /**/
+                /*Se crea una nueva imagen*/
                 JFileChooser imagenesEmpleado = new JFileChooser();
                 imagenesEmpleado.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Imagenes", "jpg", "png", "jpeg", "gif"));
                 int resultado = imagenesEmpleado.showOpenDialog(foto);
@@ -93,7 +112,6 @@ public class SubirProductos {
                     errorPrecio.setText("El precio debe ser un número válido.");
                     return;
                 }
-
                 /*Almacenamiento de todos los datos del producto*/
                 try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                     MongoDatabase db = mongoClient.getDatabase("Productos");
@@ -105,24 +123,6 @@ public class SubirProductos {
                             .append("Imagen", rutaImagen);
                     collection.insertOne(productosNuevos);
                     camposVacios.setText("Se subió satisfactoriamente el producto");
-                    /*definir el tipo de dato que almacenara cada columna de la tabla*/
-                    DefaultTableModel modelo = new DefaultTableModel() {
-                        @Override
-                        public Class<?> getColumnClass(int column) {
-                            if (column == 0){
-                                return Integer.class;
-                            } else if (column == 1) {
-                                return String.class;
-                            } else if (column == 2) {
-                                return Integer.class;
-                            } else if (column == 3) {
-                                return Double.class;
-                            } else if (column == 4) {
-                                return ImageIcon.class;
-                            }
-                            return null;
-                        }
-                    };
                     /*Se añade los nombres de las columnas*/
                     modelo.addColumn("Codigo");
                     modelo.addColumn("Nombre_producto");
@@ -157,6 +157,31 @@ public class SubirProductos {
                 } catch (MongoException exception) {
                     camposVacios.setText("No se pudo subir el producto");
                 }
+            }
+        });
+
+        eliminarProductoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(resultados.getSelectedRow() == -1){
+                    errorTabla.setText("No se ha seleccionado ningun producto");
+                } else {
+                    modelo.removeRow(resultados.getSelectedRow());
+                    errorTabla.setText("Se ha eliminado correctamente");
+                    try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
+                        MongoDatabase db = mongoClient.getDatabase("Productos");
+                        MongoCollection<Document> collection = db.getCollection("cadaProducto");
+                        Document filtro = new Document("codigo", "juan");
+                        DeleteResult resultado = collection.deleteOne(filtro);
+                        System.out.println("Documentos borrados: " + resultado.getDeletedCount());
+                    }
+                }
+            }
+        });
+        actualizarProductoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
     }
