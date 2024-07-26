@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.pack();
-        frame.setContentPane(new SubirProductos().subirProductos);
+        frame.setContentPane(new Catalogo().catalogoProductos);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setVisible(true);

@@ -96,6 +96,9 @@ public class SubirProductos {
                 String rutaImagen = ruta.getText();
                 /*No se lo utiliza, pero es parte de la clase "Productos", se setea la imagen seleccionada por el empleado*/
                 productoNuevo.setImagen(selectFile);
+                /*Limpieza de errores*/
+                errorTabla.setText("");
+                camposVacios.setText("");
                 if (codigoProducto.getText().isEmpty() || nombreProducto.getText().isEmpty() || stock.getText().isEmpty() || precioProducto.getText().isEmpty()){
                     errorTabla.setText("Se detecto campos vacíos, llene los campos porfavor");
                 }
@@ -173,6 +176,8 @@ public class SubirProductos {
                 if (resultados.getSelectedRow() == -1) {
                     errorTabla.setText("No se ha seleccionado ningún producto");
                 } else {
+                    errorTabla.setText("");
+                    camposVacios.setText("");
                     try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                         MongoDatabase db = mongoClient.getDatabase("Proyectofinalpoo");
                         MongoCollection<Document> collection = db.getCollection("cadaProducto");
@@ -200,6 +205,9 @@ public class SubirProductos {
         editarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                /*Limpieza de errores*/
+                errorTabla.setText("");
+                camposVacios.setText("");
                 if (resultados.getSelectedRow() == -1) {
                     errorTabla.setText("No se ha seleccionado ningun producto");
                 } else {
@@ -218,6 +226,9 @@ public class SubirProductos {
         modificarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                /*Limpieza de errores*/
+                errorTabla.setText("");
+                camposVacios.setText("");
                 if (resultados.getSelectedRow() == -1){
                     errorTabla.setText("No se ha seleccionado ningun producto");
                 } else {
@@ -268,6 +279,8 @@ public class SubirProductos {
         borrarInformaciónDelFormularioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                errorTabla.setText("");
+                camposVacios.setText("");
                 codigoProducto.setText("");
                 nombreProducto.setText("");
                 stock.setText("");

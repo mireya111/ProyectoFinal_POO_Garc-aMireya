@@ -187,10 +187,13 @@
       <component id="2feab" class="javax.swing.JTable" binding="resultados">
         <constraints>
           <grid row="1" column="1" row-span="14" col-span="5" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
+            <preferred-size width="150" height="150"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <intercellSpacing width="1" height="1"/>
+          <preferredScrollableViewportSize width="400" height="1000"/>
+        </properties>
       </component>
       <component id="98823" class="javax.swing.JLabel" binding="errorTabla">
         <constraints>

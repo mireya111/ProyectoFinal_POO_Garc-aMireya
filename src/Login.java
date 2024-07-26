@@ -70,7 +70,7 @@ public class Login {
                             System.out.println("Login de cliente exitoso");
                             errores.setText("Ingresando al catálogo del producto ...");
                             JFrame frame = new JFrame();
-                            frame.setContentPane(new Catalogo().catalogoCliente);
+                            frame.setContentPane(new Catalogo().catalogoProductos);
                             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                             frame.setSize(800, 600);
                             frame.setLocationRelativeTo(null);
