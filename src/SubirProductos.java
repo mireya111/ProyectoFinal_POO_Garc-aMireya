@@ -1,6 +1,7 @@
 import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 
 import javax.imageio.ImageIO;
@@ -11,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 public class SubirProductos {
     public JPanel subirProductos;
@@ -26,12 +28,13 @@ public class SubirProductos {
     private JLabel errorPrecio;
     private JLabel camposVacios;
     private JLabel errorCantidad;
-    private JButton actualizarProductoButton;
+    private JButton modificarProductoButton;
     private JButton eliminarProductoButton;
     private JTextField codigoProducto;
     private JLabel errorCodigo;
     private JButton borrarInformaciónDelFormularioButton;
     private JLabel errorTabla;
+    private JButton editarProductoButton;
     public File selectFile;
     /*Definir el tipo de dato que almacenara cada columna de la tabla*/
     DefaultTableModel modelo = new DefaultTableModel() {
@@ -93,6 +96,9 @@ public class SubirProductos {
                 String rutaImagen = ruta.getText();
                 /*No se lo utiliza, pero es parte de la clase "Productos", se setea la imagen seleccionada por el empleado*/
                 productoNuevo.setImagen(selectFile);
+                if (codigoProducto.getText().isEmpty() || nombreProducto.getText().isEmpty() || stock.getText().isEmpty() || precioProducto.getText().isEmpty()){
+                    errorTabla.setText("Se detecto campos vacíos, llene los campos porfavor");
+                }
                 try{
                     productoNuevo.setCodigo(Integer.parseInt(codigoProducto.getText()));
                 }catch (NumberFormatException ex){
@@ -114,7 +120,7 @@ public class SubirProductos {
                 }
                 /*Almacenamiento de todos los datos del producto*/
                 try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
-                    MongoDatabase db = mongoClient.getDatabase("Productos");
+                    MongoDatabase db = mongoClient.getDatabase("Proyectofinalpoo");
                     MongoCollection<Document> collection = db.getCollection("cadaProducto");
                     Document productosNuevos = new Document("Codigo",productoNuevo.getCodigo())
                             .append("Nombre_producto", productoNuevo.getNombre())
@@ -160,28 +166,114 @@ public class SubirProductos {
             }
         });
 
+        /*Eliminación de productos*/
         eliminarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(resultados.getSelectedRow() == -1){
-                    errorTabla.setText("No se ha seleccionado ningun producto");
+                if (resultados.getSelectedRow() == -1) {
+                    errorTabla.setText("No se ha seleccionado ningún producto");
                 } else {
-                    modelo.removeRow(resultados.getSelectedRow());
-                    errorTabla.setText("Se ha eliminado correctamente");
                     try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
-                        MongoDatabase db = mongoClient.getDatabase("Productos");
+                        MongoDatabase db = mongoClient.getDatabase("Proyectofinalpoo");
                         MongoCollection<Document> collection = db.getCollection("cadaProducto");
-                        Document filtro = new Document("codigo", "juan");
+
+                        /*Obtener el valor de la celda antes de eliminar la fila*/
+                        int codigo = Integer.parseInt(modelo.getValueAt(resultados.getSelectedRow(), 0).toString());
+                        Document filtro = new Document("Codigo", codigo);
+
+                        /* Eliminar el documento de MongoDB*/
                         DeleteResult resultado = collection.deleteOne(filtro);
+                        /*Confirmación de cuantos documentos se han eliminado*/
                         System.out.println("Documentos borrados: " + resultado.getDeletedCount());
+
+                        /*Eliminar la fila del modelo de la tabla*/
+                        modelo.removeRow(resultados.getSelectedRow());
+                        errorTabla.setText("Se ha eliminado correctamente");
+                    } catch (Exception ex) {
+                        errorTabla.setText("Error al eliminar el producto: " + ex.getMessage());
                     }
                 }
             }
         });
-        actualizarProductoButton.addActionListener(new ActionListener() {
+
+        /*Mover la información de la tabla a el formulario para su modificacion*/
+        editarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (resultados.getSelectedRow() == -1) {
+                    errorTabla.setText("No se ha seleccionado ningun producto");
+                } else {
+                    codigoProducto.setText(modelo.getValueAt(resultados.getSelectedRow(),0).toString());
+                    nombreProducto.setText(modelo.getValueAt(resultados.getSelectedRow(),1).toString());
+                    stock.setText(modelo.getValueAt(resultados.getSelectedRow(),2).toString());
+                    precioProducto.setText(modelo.getValueAt(resultados.getSelectedRow(),3).toString());
+                    ruta.setText(modelo.getValueAt(resultados.getSelectedRow(),4).toString());
+                    ImageIcon imagen = (ImageIcon) modelo.getValueAt(resultados.getSelectedRow(), 4);
+                    foto2.setIcon(imagen);
+                }
+            }
+        });
 
+        /*Actualizar los productos*/
+        modificarProductoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (resultados.getSelectedRow() == -1){
+                    errorTabla.setText("No se ha seleccionado ningun producto");
+                } else {
+                    try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
+                        MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
+                        MongoCollection<Document> collection = database.getCollection("cadaProducto");
+                        /*Obtener el valor de la celda antes de modificar la fila*/
+                        int codigo = Integer.parseInt(codigoProducto.getText().trim());
+                        String nombre = nombreProducto.getText().trim();
+                        int cantidad = Integer.parseInt(stock.getText().trim());
+                        Double precio = Double.parseDouble(precioProducto.getText().trim());
+                        String rutaImagen = ruta.getText().trim();
+                        /*En dodne se actualizará*/
+                        Document filtro = new Document("Codigo", codigo);
+                        /*Que se actualizará*/
+                        Document actualizacion = new Document("$set", new Document("Nombre_producto", nombre)
+                                .append("Cantidad_disponible", cantidad)
+                                .append("Precio", precio)
+                                .append("Imagen", rutaImagen));
+                        UpdateResult resultado = collection.updateOne(filtro, actualizacion);
+                        /*Verificar si el producto se modifico*/
+                        System.out.println("Documentos modificados: " + resultado.getModifiedCount());
+                        /*Visualización de la tabla*/
+                        modelo.setValueAt(codigo, resultados.getSelectedRow(), 0);
+                        modelo.setValueAt(nombre, resultados.getSelectedRow(), 1);
+                        modelo.setValueAt(cantidad, resultados.getSelectedRow(), 2);
+                        modelo.setValueAt(precio, resultados.getSelectedRow(), 3);
+
+                        /*Actualiza la imagen en la tabla*/
+                        try {
+                            Image img = ImageIO.read(new File(rutaImagen));
+                            if (img != null) {
+                                /*Se ajusta la imagen*/
+                                ImageIcon imageIcon = new ImageIcon(img.getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+                                modelo.setValueAt(imageIcon, resultados.getSelectedRow(), 4);
+                            } else {
+                                modelo.setValueAt(null, resultados.getSelectedRow(), 4);
+                            }
+                        } catch (IOException ex) {
+                            modelo.setValueAt(null, resultados.getSelectedRow(), 4);
+                        }
+                    }
+                }
+            }
+        });
+
+        /*Borrar la información para colocar un nuevo producto*/
+        borrarInformaciónDelFormularioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                codigoProducto.setText("");
+                nombreProducto.setText("");
+                stock.setText("");
+                precioProducto.setText("");
+                ruta.setText("");
+                foto2.setIcon(null);
             }
         });
     }
