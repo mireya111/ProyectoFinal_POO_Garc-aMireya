@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class Productos {
+public class Productos extends Clientes{
     int codigo;
     String nombre;
     int cantidadDisponible;

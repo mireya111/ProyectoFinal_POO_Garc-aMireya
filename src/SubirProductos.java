@@ -185,7 +185,6 @@ public class SubirProductos {
                         /*Obtener el valor de la celda antes de eliminar la fila*/
                         int codigo = Integer.parseInt(modelo.getValueAt(resultados.getSelectedRow(), 0).toString());
                         Document filtro = new Document("Codigo", codigo);
-
                         /* Eliminar el documento de MongoDB*/
                         DeleteResult resultado = collection.deleteOne(filtro);
                         /*Confirmación de cuantos documentos se han eliminado*/

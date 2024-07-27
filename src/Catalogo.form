@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Catalogo">
-  <grid id="27dc6" binding="catalogoProductos" layout-manager="GridLayoutManager" row-count="9" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="catalogoProductos" layout-manager="GridLayoutManager" row-count="10" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="666" height="400"/>
+      <xy x="20" y="20" width="666" height="474"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -18,7 +18,7 @@
           <text value="Catalogo de productos"/>
         </properties>
       </component>
-      <component id="fa046" class="javax.swing.JTable" binding="productosDisponibles">
+      <component id="fa046" class="javax.swing.JTable" binding="catalogosProductos">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="5" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="189"/>
@@ -46,7 +46,7 @@
       </component>
       <component id="4dba1" class="javax.swing.JButton" binding="agregarCarrito">
         <constraints>
-          <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Agregar al carrito "/>
@@ -54,7 +54,7 @@
       </component>
       <component id="7e271" class="javax.swing.JButton" binding="generarOrden">
         <constraints>
-          <grid row="6" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Generar orden en pdf"/>
@@ -62,7 +62,7 @@
       </component>
       <component id="49eda" class="javax.swing.JButton" binding="realizarPedido">
         <constraints>
-          <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Realizar pedido"/>
@@ -70,7 +70,7 @@
       </component>
       <component id="e4d35" class="javax.swing.JButton" binding="actualizarPedido">
         <constraints>
-          <grid row="7" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="8" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Actualizar pedido"/>
@@ -78,7 +78,7 @@
       </component>
       <component id="eb4bd" class="javax.swing.JButton" binding="eliminarPedido">
         <constraints>
-          <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="9" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Eliminar pedido "/>
@@ -86,7 +86,7 @@
       </component>
       <component id="e856f" class="javax.swing.JButton" binding="atrás">
         <constraints>
-          <grid row="8" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="9" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Atrás"/>
@@ -140,6 +140,14 @@
         </constraints>
         <properties>
           <text value="Imagen"/>
+        </properties>
+      </component>
+      <component id="a9a76" class="javax.swing.JLabel" binding="confirmacionErrores">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value=""/>
         </properties>
       </component>
     </children>
