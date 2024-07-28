@@ -1,7 +1,4 @@
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 
@@ -16,7 +13,7 @@ public class Catalogo {
     private JTextField cantidadCliente;
     private JButton agregarCarrito;
     private JButton generarOrden;
-    private JButton realizarPedido;
+    private JButton eliminarProducto;
     private JButton actualizarPedido;
     private JButton atrás;
     private JLabel erroresCatalogo;
@@ -169,18 +166,19 @@ public class Catalogo {
                 /*Creacion de objetos y setearlos*/
                 Compra compraNueva = new Compra();
                 compraNueva.setCantidadProducto(Integer.parseInt(cantidadCliente.getText()));
-                /*Validacion de la selecccion de un producto*/
-                if(carritoProducto.getSelectedRow() == -1){
-                    confirmacionErrores.setText("No se encuentra selecccionado ningun producto, por favor seleccione uno");
-                }else{
-                    /*Validacion de el campo que almacena la cantidad solicitante, no tiene que ser vacio*/
+
+                /*Validacion de la seleccion de un producto*/
+                if (carritoProducto.getSelectedRow() == -1) {
+                    confirmacionErrores.setText("No se encuentra seleccionado ningún producto, por favor seleccione uno.");
+                } else {
+                    /*Validacion del campo que almacena la cantidad solicitada, no debe estar vacío*/
                     if (cantidadCliente.getText().isEmpty()) {
                         confirmacionErrores.setText("El campo de cantidad no puede estar vacío.");
                         return;
                     }
 
-                    /*Validacion para que el campo que almacena la cantidad solicitante no sea un numero negativo*/
-                    /*La validacion para que el campo solo reciba caracteres numericos*/
+                    /*Validacion para que el campo que almacena la cantidad solicitada no sea un número negativo*/
+                    /*Validacion para que el campo solo reciba caracteres numéricos*/
                     int cantidadSolicitada;
                     try {
                         cantidadSolicitada = Integer.parseInt(cantidadCliente.getText());
@@ -189,54 +187,79 @@ public class Catalogo {
                             return;
                         }
                     } catch (NumberFormatException ex) {
-                        confirmacionErrores.setText("Ingrese un número válido para la cantidad.");
+                        confirmacionErrores.setText("Ingrese un número válido, este campo no acepta caracteres.");
                         return;
                     }
 
-                    /*Validacion para que se seleccione un producto*/
-                    if (catalogosProductos.getSelectedRow() == -1) {
-                        erroresCatalogo.setText("Se debe seleccionar un producto");
-                        return;
-                    }
-
-                    /*Obtener el valor de la celda antes de modificar la fila de la tabla "modelo"*/
-                    int codigoDelProducto = Integer.parseInt(modelo.getValueAt(catalogosProductos.getSelectedRow(), 0).toString());
-                    String nombreDelProducto = modelo.getValueAt(catalogosProductos.getSelectedRow(), 1).toString();
-                    int cantidadDelProducto = Integer.parseInt(modelo.getValueAt(catalogosProductos.getSelectedRow(), 2).toString());
-
-                    /*Obtener el valor de la celda antes de modificar la fila de la tabla "modeloDos"*/
-                    int codigoDelProducto2 = Integer.parseInt(modeloDos.getValueAt(catalogosProductos.getSelectedRow(), 0).toString());
-                    String nombreDelProducto2 = modeloDos.getValueAt(catalogosProductos.getSelectedRow(), 1).toString();
-                    int cantidadDelProducto2 = Integer.parseInt(modeloDos.getValueAt(catalogosProductos.getSelectedRow(), 2).toString());
-                    double precioDelProducto2 = Double.parseDouble(modelo.getValueAt(catalogosProductos.getSelectedRow(), 3).toString());
-
-                    /*Cantidad del producto anterior*/
-                    int cantidadAnterior = cantidadDelProducto + cantidadDelProducto2;
+                    /*Obtener la información del producto seleccionado en la tabla carritoProducto*/
+                    int codigoDelProductoCarrito = Integer.parseInt(modeloDos.getValueAt(carritoProducto.getSelectedRow(), 0).toString());
+                    String nombreDelProducto = modeloDos.getValueAt(carritoProducto.getSelectedRow(), 1).toString();
+                    int cantidadAnteriorCarrito = Integer.parseInt(modeloDos.getValueAt(carritoProducto.getSelectedRow(), 2).toString());
 
                     /*Linea de conexion*/
                     try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                         MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
                         MongoCollection<Document> collection = database.getCollection("cadaProducto");
 
-                        /*Determinacion de la nueva cantidad disponible*/
-                        int cantidadDisNueva = cantidadAnterior - cantidadSolicitada;
-                        /*En dodne se actualizará*/
-                        Document filtro = new Document("Codigo", codigoDelProducto);
-                        /*Que se actualizará*/
-                        Document actualizacion = new Document("$set", new Document("Cantidad_disponible", cantidadDisNueva ));
-                        UpdateResult resultado = collection.updateOne(filtro, actualizacion);
-                        /*Verificar si el producto se modifico*/
-                        System.out.println("Documentos modificados: " + resultado.getModifiedCount());
+                        /* Realiza las consultas */
+                        FindIterable<Document> documento1 = collection.find();
 
-                        /*Visualizacion de la tabla*/
-                        modelo.setValueAt(cantidadDisNueva, catalogosProductos.getSelectedRow(), 2);
-                        modeloDos.setValueAt(cantidadDisNueva, catalogosProductos.getSelectedRow(), 2);
-                        confirmacionErrores.setText("Se ha agregado al carrito el producto " + nombreDelProducto);
+                        /*Verificacion de que si existe un registro en la base de datos con datos iguales a los que se pretende actualizar en la tabla carritoProducto*/
+                        boolean productoEncontrado = false;
+                        for (Document documento : documento1) {
+                            Integer codigo = documento.getInteger("Codigo");
+                            String nombre = documento.getString("Nombre_producto");
+
+                            if (codigo != null && nombre != null && codigo.equals(codigoDelProductoCarrito) && nombre.equals(nombreDelProducto)) {
+                                productoEncontrado = true;
+                                int cantidadAnteriorCatalogo = documento.getInteger("Cantidad_disponible");
+                                int cantidadAntetior = cantidadAnteriorCatalogo + cantidadAnteriorCarrito;
+                                int cantidadNuevaProducto = cantidadAntetior - compraNueva.getCantidadProducto();
+
+                                /*Nuevo precio del producto*/
+                                Double precioPorProducto = documento.getDouble("Precio");
+                                Double precioNuevoPorProducto = compraNueva.getCantidadProducto() * precioPorProducto;
+
+                                System.out.println("Precio nuevo del producto: "+ precioNuevoPorProducto);
+
+                                /*Actualizacion en la base de datos*/
+                                Document filtro = new Document("Codigo", codigoDelProductoCarrito);
+                                Document actualizacion = new Document("$set", new Document("Cantidad_disponible", cantidadNuevaProducto));
+                                UpdateResult resultado = collection.updateOne(filtro, actualizacion);
+
+                                /*Verificar si el producto se modifico*/
+                                System.out.println("Documentos modificados: " + resultado.getModifiedCount());
+
+                                /*Insercion de los nuevos datos en las tablas*/
+                                modelo.setValueAt(cantidadNuevaProducto, catalogosProductos.getSelectedRow(), 2);
+                                modeloDos.setValueAt(compraNueva.getCantidadProducto(), carritoProducto.getSelectedRow(), 2);
+                                modeloDos.setValueAt(precioNuevoPorProducto, carritoProducto.getSelectedRow(), 3);
+                                confirmacionErrores.setText("Se ha modificado el carrito en el producto " + nombreDelProducto);
+                                break;
+                            }
+                        }
+
+                        if (!productoEncontrado) {
+                            confirmacionErrores.setText("El producto seleccionado en el carrito no se encuentra en la base de datos.");
+                        }
+                    } catch (Exception ex) {
+                        confirmacionErrores.setText("La actualización del producto seleccionado no fue correcta: " + ex.getMessage());
                     }
                 }
-
             }
         });
 
+        eliminarProducto.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(carritoProducto.getSelectedRow()==-1){
+                    errorCarrito.setText("Para eliminar necesita seleccionar un producto del carrito");
+                }else{
+                    /*Eliminar la fila de la tabla*/
+                    modeloDos.removeRow(carritoProducto.getSelectedRow());
+                    errorCarrito.setText("Se ha eliminado correctamente");
+                }
+            }
+        });
     }
 }

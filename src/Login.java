@@ -38,7 +38,7 @@ public class Login {
                         MongoCollection<Document> collection1 = database.getCollection("clientes");
                         MongoCollection<Document> collection2 = database.getCollection("empleado");
 
-                        System.out.println("Debug: Conectado a la base de datos");
+                        System.out.println("Conectado a la base de datos");
 
                         /* Realiza las consultas */
                         FindIterable<Document> documento1 = collection1.find();
