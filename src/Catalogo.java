@@ -6,6 +6,11 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileOutputStream;
+
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 public class Catalogo {
     public JPanel catalogoProductos;
@@ -24,6 +29,7 @@ public class Catalogo {
     private JButton editarProducto;
     private JTable carrito;
     private double contadorPrecio = 0;
+
     DefaultTableModel modelo = new DefaultTableModel() {
         @Override
         public Class<?> getColumnClass(int column) {
@@ -258,6 +264,22 @@ public class Catalogo {
                     /*Eliminar la fila de la tabla*/
                     modeloDos.removeRow(carritoProducto.getSelectedRow());
                     errorCarrito.setText("Se ha eliminado correctamente");
+                }
+            }
+        });
+        generarOrden.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                com.itextpdf.text.Document pdfDocumento = new com.itextpdf.text.Document();
+                try{
+                    String ruta = System.getProperty("user.home");
+                    PdfWriter.getInstance(pdfDocumento, new FileOutputStream(ruta + "/Desktop/Compra_.pdf"));
+                    pdfDocumento.open();
+                    PdfPTable table = new PdfPTable(4);
+
+
+                } catch(){
+
                 }
             }
         });
