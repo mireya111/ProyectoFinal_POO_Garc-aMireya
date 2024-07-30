@@ -1,3 +1,5 @@
+import com.itextpdf.text.Paragraph;
+import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
@@ -6,14 +8,18 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-public class Catalogo {
+public class Catalogo extends Clientes {
     public JPanel catalogoProductos;
     private JTable catalogosProductos;
     private JTextField cantidadCliente;
@@ -64,7 +70,8 @@ public class Catalogo {
         }
     };
 
-    public Catalogo() {
+    public Catalogo(){
+        super();
         Productos catalogoProduct = new Productos();
         catalogoProduct.catalogo(modelo, catalogosProductos, erroresCatalogo);
         /*Conformación de la tabla carrito*/
@@ -271,16 +278,85 @@ public class Catalogo {
         generarOrden.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                /*Para la generación del pdf*/
                 com.itextpdf.text.Document pdfDocumento = new com.itextpdf.text.Document();
-                try{
+                /*Crear un objeto y setear los valores*/
+                Compra detalleCompra = new Compra();
+                /*El pedido debe tener un numero que lo identifique, este es */
+                int numeroLimite = 1;
+                detalleCompra.setNumero_pedido(numeroLimite);
+                try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")){
+                    MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
+                    MongoCollection<Document> collection = database.getCollection("detalleCompra");
+                    /*Insertar el numero del pedido y la fecha del pedido*/
+                    Document detalleDocumento = new Document("Numero_pedido", detalleCompra.getNumero_pedido())
+                            .append("Fecha_pedido", detalleCompra.getFecha());
+
+                    /*Se almacenara una lista en la base de datos para el detalle de los productos, por lo tanto, se crea la misma*/
+                    List<Document> productos = new ArrayList<>();
+
+                    /*Agregar lo escogido por el cliente a la lista productos*/
+                    for (int i = 0; i < carritoProducto.getRowCount(); i++) {
+
+                        /*Crear un documento para cada producto*/
+                        Document producto = new Document("Nombre del producto", modeloDos.getValueAt(i, 1))
+                                .append("Cantidad a comprar", modeloDos.getValueAt(i, 2))
+                                .append("Precio del producto", modeloDos.getValueAt(i, 3));
+                        /*Agregar el documento que contiene el detalle de los productos a la lista*/
+                        productos.add(producto);
+                    }
+
+                    /*Generar un campo "Productos" que tendra la lista dentro de la base de datos*/
+                    detalleDocumento.append("Productos", productos);
+
+                    /*Insertar el documento completo en la colección*/
+                    collection.insertOne(detalleDocumento);
+
+                    /*Confirmación de la insercion en la base de datos*/
+                    System.out.println("Documento insertado: " + detalleDocumento);
+
+                    /*Obtener la ruta del escritorio*/
                     String ruta = System.getProperty("user.home");
-                    PdfWriter.getInstance(pdfDocumento, new FileOutputStream(ruta + "/Desktop/Compra_.pdf"));
+                    String directorio = ruta + File.separator + "Escritorio";
+
+                    /*Verificar si existe o no el directorio, sino, lo crea* /
+                    File directorioArchivo = new File(directorio);
+                    if (!directorioArchivo.exists()) {
+                        boolean creado = directorioArchivo.mkdir(); // Crear el directorio
+                        if (!creado) {
+                            System.out.println("No se pudo crear el directorio en la ruta: " + directorio);
+                            return;
+                        }
+                    }
+
+                    /*Crear el archivo PDF*/
+                    File archivoPDF = new File(directorio + File.separator + "Compra_.pdf");
+                    PdfWriter.getInstance(pdfDocumento, new FileOutputStream(archivoPDF));
+
                     pdfDocumento.open();
-                    PdfPTable table = new PdfPTable(4);
+                    Paragraph textoInformacion = new Paragraph();
+                    PdfPTable table = new PdfPTable(3);
+                    table.addCell("Nombre del producto");
+                    table.addCell("Cantidad del producto");
+                    table.addCell("Precio del producto");
 
+                    for (int i = 0; i < carritoProducto.getRowCount(); i++) {
+                        table.addCell(modeloDos.getValueAt(i, 1).toString());
+                        table.addCell(modeloDos.getValueAt(i, 2).toString());
+                        table.addCell(modeloDos.getValueAt(i, 3).toString());
+                    }
+                    String totalAPagar = totalPagar.getText();
+                    textoInformacion.add("Total: " + totalAPagar);
+                    pdfDocumento.add(table);
+                    pdfDocumento.add(textoInformacion);
+                    pdfDocumento.close();
+                    errorCarrito.setText("Se ha generado adecuadamente el pdf de la compra");
+                    System.out.println("PDF creado en la ruta: " + archivoPDF.getAbsolutePath());
 
-                }  catch (DocumentException | FileNotFoundException ex) {
-                    throw new RuntimeException(ex);
+                }catch(FileNotFoundException | DocumentException exception){
+                    errorCarrito.setText("Error al generar el PDF" + exception.getMessage());
+                }catch(MongoException exception){
+                    errorCarrito.setText("Error al guardar datos en la base de datos");
                 }
             }
         });

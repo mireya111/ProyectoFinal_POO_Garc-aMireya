@@ -1,3 +1,4 @@
+
 import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import org.bson.Document;
@@ -16,6 +17,7 @@ public class Login {
     private JButton registroEmpleadosButton;
     private JLabel errores;
 
+
     public Login(JFrame frame1) {
         entrarButton.addActionListener(new ActionListener() {
             @Override
@@ -31,7 +33,6 @@ public class Login {
                 if (Objects.equals(clienteValidacion.getCorreo(), "") || Objects.equals(clienteValidacion.getContrasenia(), "")){
                     errores.setText("Se encuentran campos vacíos");
                 }else {
-
                     /*Linea de conexion*/
                     try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                         MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
