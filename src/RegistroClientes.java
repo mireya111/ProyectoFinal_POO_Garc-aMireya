@@ -4,7 +4,6 @@ import com.mongodb.client.MongoClient;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Objects;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -18,11 +17,14 @@ public class RegistroClientes {
     private JTextField nombre;
     private JTextField apellido;
     private JTextField correo;
-    private JTextField contra;
+    private JPasswordField contra ;
     private JButton registroCliente;
     private JLabel confirmacion;
+    private JButton regresar;
+    private JFrame frame1;
 
-    public RegistroClientes() {
+    public RegistroClientes(JFrame frame) {
+        frame1=frame;
         registroCliente.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -62,22 +64,25 @@ public class RegistroClientes {
 
             }
         });
+        regresar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame();
+                frame.pack();
+                frame.setContentPane(new Login(frame).panelLogin);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(800, 600);
+                frame.setVisible(true);
+                frame.setLocationRelativeTo(null);
+                frame1.setVisible(false);
+            }
+        });
     }
 
     /*private String hashPassword(String contrasenia) {
 
     }*/
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame();
-        frame.pack();
-        frame.setContentPane(new RegistroClientes().registroclientes);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setVisible(true);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
 }
 
 

@@ -11,13 +11,15 @@ import java.util.Objects;
 public class Login {
     public JPanel panelLogin;
     private JTextField correo;
-    private JTextField contrasenia;
+    private JPasswordField contrasenia;
     private JButton entrarButton;
     private JButton registroClienteButton;
     private JButton registroEmpleadosButton;
     private JLabel errores;
-
-
+    private static String cedulaCliente;
+    private static String nombreCliente;
+    private static String apellidoCliente;
+    private static String email;
     public Login(JFrame frame1) {
         entrarButton.addActionListener(new ActionListener() {
             @Override
@@ -51,6 +53,9 @@ public class Login {
                         for (Document documento : documento1) {
                             if (documento.getString("correo").equals(clienteValidacion.getCorreo()) &&
                                     documento.getString("contraseña").equals(clienteValidacion.getContrasenia())) {
+                                String nombre = documento.getString("nombre");
+                                String apellido = documento.getString("apellido");
+                                String email = documento.getString("email");
                                 clienteEncontrado = true;
                                 break;
                             }
@@ -71,7 +76,7 @@ public class Login {
                             System.out.println("Login de cliente exitoso");
                             errores.setText("Ingresando al catálogo del producto ...");
                             JFrame frame = new JFrame();
-                            frame.setContentPane(new Catalogo().catalogoProductos);
+                            frame.setContentPane(new Catalogo(frame).catalogoProductos);
                             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                             frame.setSize(800, 600);
                             frame.setLocationRelativeTo(null);
@@ -81,7 +86,7 @@ public class Login {
                             System.out.println("Login de empleado exitoso");
                             errores.setText("Ingresando a la sección empleados ...");
                             JFrame frame = new JFrame();
-                            frame.setContentPane(new SubirProductos().subirProductos);
+                            frame.setContentPane(new SubirProductos(frame).subirProductos);
                             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                             frame.setSize(800, 600);
                             frame.setLocationRelativeTo(null);
@@ -101,7 +106,7 @@ public class Login {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = new JFrame();
-                frame.setContentPane(new RegistroClientes().registroclientes);
+                frame.setContentPane(new RegistroClientes(frame).registroclientes);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setSize(800, 600);
                 frame.setLocationRelativeTo(null);
@@ -113,7 +118,7 @@ public class Login {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = new JFrame();
-                frame.setContentPane(new RegistroDuenio().registrarempleado);
+                frame.setContentPane(new RegistroDuenio(frame).registrarempleado);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setSize(800, 600);
                 frame.setLocationRelativeTo(null);
@@ -122,5 +127,35 @@ public class Login {
             }
         });
     }
+    public class ClientesDatos {
+        private static String cedulaCliente;
+        private static String nombreCliente;
+        private static String apellidoCliente;
+        private static String email;
+
+        public static void setCliente(String cedula, String nombre, String apellido, String correo) {
+            cedulaCliente = cedula;
+            nombreCliente = nombre;
+            apellidoCliente = apellido;
+            email = correo;
+        }
+
+        public static String getCedulaCliente() {
+            return cedulaCliente;
+        }
+
+        public static String getNombreCliente() {
+            return nombreCliente;
+        }
+
+        public static String getApellidoCliente() {
+            return apellidoCliente;
+        }
+
+        public static String getEmailCliente() {
+            return email;
+        }
+    }
+
 }
 

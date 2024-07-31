@@ -13,13 +13,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-public class Catalogo extends Clientes {
+public class Catalogo extends JFrame {
     public JPanel catalogoProductos;
     private JTable catalogosProductos;
     private JTextField cantidadCliente;
@@ -27,7 +26,7 @@ public class Catalogo extends Clientes {
     private JButton generarOrden;
     private JButton eliminarProducto;
     private JButton actualizarPedido;
-    private JButton atrás;
+    private JButton atras;
     private JLabel erroresCatalogo;
     private JLabel confirmacionErrores;
     private JTable carritoProducto;
@@ -36,6 +35,7 @@ public class Catalogo extends Clientes {
     private JButton editarProducto;
     private JTable carrito;
     private double contadorPrecio = 0;
+    private JFrame frame1;
 
     DefaultTableModel modelo = new DefaultTableModel() {
         @Override
@@ -70,8 +70,8 @@ public class Catalogo extends Clientes {
         }
     };
 
-    public Catalogo(){
-        super();
+    public Catalogo(JFrame frame){
+        frame1=frame;
         Productos catalogoProduct = new Productos();
         catalogoProduct.catalogo(modelo, catalogosProductos, erroresCatalogo);
         /*Conformación de la tabla carrito*/
@@ -319,22 +319,18 @@ public class Catalogo extends Clientes {
                     String ruta = System.getProperty("user.home");
                     String directorio = ruta + File.separator + "Escritorio";
 
-                    /*Verificar si existe o no el directorio, sino, lo crea* /
-                    File directorioArchivo = new File(directorio);
-                    if (!directorioArchivo.exists()) {
-                        boolean creado = directorioArchivo.mkdir(); // Crear el directorio
-                        if (!creado) {
-                            System.out.println("No se pudo crear el directorio en la ruta: " + directorio);
-                            return;
-                        }
-                    }
-
                     /*Crear el archivo PDF*/
-                    File archivoPDF = new File(directorio + File.separator + "Compra_.pdf");
+                    File archivoPDF = new File(directorio + File.separator + "Factura_0"+detalleCompra.getNumero_pedido()+".pdf");
                     PdfWriter.getInstance(pdfDocumento, new FileOutputStream(archivoPDF));
 
                     pdfDocumento.open();
                     Paragraph textoInformacion = new Paragraph();
+                    textoInformacion.add("Zapatos Lombardy");
+                    textoInformacion.add("Cedula: "+ Login.ClientesDatos.getCedulaCliente());
+                    textoInformacion.add("Nombre: "+ Login.ClientesDatos.getNombreCliente());
+                    textoInformacion.add("Apellido: "+ Login.ClientesDatos.getApellidoCliente());
+                    textoInformacion.add("Correo: "+ Login.ClientesDatos.getEmailCliente());
+                    textoInformacion.add("Numero de la compra: "+detalleCompra.getNumero_pedido());
                     PdfPTable table = new PdfPTable(3);
                     table.addCell("Nombre del producto");
                     table.addCell("Cantidad del producto");
@@ -358,6 +354,18 @@ public class Catalogo extends Clientes {
                 }catch(MongoException exception){
                     errorCarrito.setText("Error al guardar datos en la base de datos");
                 }
+            }
+        });
+        atras.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame();
+                frame.setContentPane(new Login(frame).panelLogin);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(800, 600);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+                frame1.setVisible(false);
             }
         });
     }

@@ -32,14 +32,6 @@
           <text value="Contraseña"/>
         </properties>
       </component>
-      <component id="16c03" class="javax.swing.JTextField" binding="contrasenia">
-        <constraints>
-          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
       <component id="e21d3" class="javax.swing.JButton" binding="entrarButton" default-binding="true">
         <constraints>
           <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -71,6 +63,14 @@
         <properties>
           <text value=""/>
         </properties>
+      </component>
+      <component id="f610c" class="javax.swing.JPasswordField" binding="contrasenia">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
       </component>
     </children>
   </grid>

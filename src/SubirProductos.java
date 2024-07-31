@@ -35,7 +35,9 @@ public class SubirProductos {
     private JButton borrarInformaciónDelFormularioButton;
     private JLabel errorTabla;
     private JButton editarProductoButton;
+    private JButton regresar;
     public File selectFile;
+    private JFrame frame1;
     /*Definir el tipo de dato que almacenara cada columna de la tabla*/
     DefaultTableModel modelo = new DefaultTableModel() {
         @Override
@@ -54,7 +56,8 @@ public class SubirProductos {
             return null;
         }
     };
-    public SubirProductos() {
+    public SubirProductos(JFrame frame) {
+        frame1=frame;
         /*Para acceder a los archivos y que se muestre antes de subir el producto*/
         explorarImagenes.addActionListener(new ActionListener() {
             @Override
@@ -286,6 +289,19 @@ public class SubirProductos {
                 precioProducto.setText("");
                 ruta.setText("");
                 foto2.setIcon(null);
+            }
+        });
+        regresar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame();
+                frame.pack();
+                frame.setContentPane(new Login(frame).panelLogin);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(800, 600);
+                frame.setVisible(true);
+                frame.setLocationRelativeTo(null);
+                frame1.setVisible(true);
             }
         });
     }

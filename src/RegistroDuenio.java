@@ -18,8 +18,11 @@ public class RegistroDuenio {
     private JButton registrarEmpleadoButton;
     private JPasswordField contrase;
     private JLabel confirmacion;
+    private JButton regresar;
+    private JFrame frame1;
 
-    public RegistroDuenio() {
+    public RegistroDuenio(JFrame frame) {
+        frame1=frame;
         registrarEmpleadoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -43,6 +46,19 @@ public class RegistroDuenio {
                 } catch (MongoException exception) {
                     confirmacion.setText("El cliente no se registro correctamente");
                 }
+            }
+        });
+        regresar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame();
+                frame.pack();
+                frame.setContentPane(new Login(frame).panelLogin);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(800, 600);
+                frame.setVisible(true);
+                frame.setLocationRelativeTo(null);
+                frame1.setVisible(false);
             }
         });
     }
