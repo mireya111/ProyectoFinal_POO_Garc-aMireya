@@ -16,10 +16,10 @@ public class Login {
     private JButton registroClienteButton;
     private JButton registroEmpleadosButton;
     private JLabel errores;
-    private static String cedulaCliente;
-    private static String nombreCliente;
-    private static String apellidoCliente;
-    private static String email;
+    /*public static int cedulaCliente;*/
+    public static String nombreCliente;
+    public static String apellidoCliente;
+    public static String email;
     public Login(JFrame frame1) {
         entrarButton.addActionListener(new ActionListener() {
             @Override
@@ -53,9 +53,11 @@ public class Login {
                         for (Document documento : documento1) {
                             if (documento.getString("correo").equals(clienteValidacion.getCorreo()) &&
                                     documento.getString("contraseña").equals(clienteValidacion.getContrasenia())) {
+                                /*String cedula = documento.getString("cedula");*/
                                 String nombre = documento.getString("nombre");
                                 String apellido = documento.getString("apellido");
-                                String email = documento.getString("email");
+                                String email = documento.getString("correo");
+                                ClientesDatos.setCliente(nombre, apellido, email);
                                 clienteEncontrado = true;
                                 break;
                             }
@@ -127,22 +129,22 @@ public class Login {
             }
         });
     }
-    public class ClientesDatos {
-        private static String cedulaCliente;
+    public static class ClientesDatos {
+        /*private static String cedulaCliente;*/
         private static String nombreCliente;
         private static String apellidoCliente;
         private static String email;
 
-        public static void setCliente(String cedula, String nombre, String apellido, String correo) {
-            cedulaCliente = cedula;
+        public static void setCliente(/*String cedula,*/ String nombre, String apellido, String correo) {
+            /*cedulaCliente = String.valueOf(cedula);*/
             nombreCliente = nombre;
             apellidoCliente = apellido;
             email = correo;
         }
 
-        public static String getCedulaCliente() {
+        /*public static String getCedulaCliente() {
             return cedulaCliente;
-        }
+        }*/
 
         public static String getNombreCliente() {
             return nombreCliente;

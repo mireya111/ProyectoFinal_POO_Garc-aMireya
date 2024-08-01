@@ -135,6 +135,8 @@ public class SubirProductos {
                             .append("Imagen", rutaImagen);
                     collection.insertOne(productosNuevos);
                     camposVacios.setText("Se subió satisfactoriamente el producto");
+                    /*Para que la fila se agrande*/
+                    resultados.setRowHeight(50);
                     /*Se añade los nombres de las columnas*/
                     modelo.addColumn("Codigo");
                     modelo.addColumn("Nombre_producto");

@@ -81,6 +81,8 @@ public class Productos extends Clientes{
             /*Busqueda para la muestra de los detalles de los productos publicados*/
             FindIterable<Document> documentos = collection.find();
             for (Document documento : documentos) {
+                /*Para que la fila se agrande*/
+                resultados.setRowHeight(50);
                 int codigo = documento.getInteger("Codigo", 0);
                 String nombre = documento.getString("Nombre_producto");
                 int cantidad = documento.getInteger("Cantidad_disponible", 0);

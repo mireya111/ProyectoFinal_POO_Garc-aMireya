@@ -36,6 +36,7 @@ public class Catalogo extends JFrame {
     private JTable carrito;
     private double contadorPrecio = 0;
     private JFrame frame1;
+    private int contadorPdfs = 0;
 
     DefaultTableModel modelo = new DefaultTableModel() {
         @Override
@@ -80,7 +81,8 @@ public class Catalogo extends JFrame {
         modeloDos.addColumn("Cantidad ha comprar");
         modeloDos.addColumn("Precio del producto");
         carritoProducto.setModel(modeloDos);
-
+        /*Para que la fila se agrande*/
+        carritoProducto.setRowHeight(30);
         agregarCarrito.addActionListener(new ActionListener() {
             double contadorPrecio = 0;
             @Override
@@ -154,7 +156,7 @@ public class Catalogo extends JFrame {
                     compraNueva.setCantidadProducto(cantidadSolicitada);
                     compraNueva.setPrecioTotal(precioPorCantidad);
                     contadorPrecio += precioPorCantidad;
-                    totalPagar.setText(String.valueOf(contadorPrecio));
+                    totalPagar.setText(String.format("%.2f", contadorPrecio));
 
                     /*Colocación de valores en la tabla carrito*/
                     modeloDos.addRow(new Object[]{codigoDelProducto, nombreDelProducto, cantidadSolicitada, compraNueva.getPrecioTotal()});
@@ -282,8 +284,8 @@ public class Catalogo extends JFrame {
                 com.itextpdf.text.Document pdfDocumento = new com.itextpdf.text.Document();
                 /*Crear un objeto y setear los valores*/
                 Compra detalleCompra = new Compra();
-                /*El pedido debe tener un numero que lo identifique, este es */
                 int numeroLimite = 1;
+                contadorPdfs+=numeroLimite;
                 detalleCompra.setNumero_pedido(numeroLimite);
                 try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")){
                     MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
@@ -325,12 +327,15 @@ public class Catalogo extends JFrame {
 
                     pdfDocumento.open();
                     Paragraph textoInformacion = new Paragraph();
-                    textoInformacion.add("Zapatos Lombardy");
-                    textoInformacion.add("Cedula: "+ Login.ClientesDatos.getCedulaCliente());
-                    textoInformacion.add("Nombre: "+ Login.ClientesDatos.getNombreCliente());
-                    textoInformacion.add("Apellido: "+ Login.ClientesDatos.getApellidoCliente());
-                    textoInformacion.add("Correo: "+ Login.ClientesDatos.getEmailCliente());
-                    textoInformacion.add("Numero de la compra: "+detalleCompra.getNumero_pedido());
+                    Paragraph textoInformacion2 = new Paragraph();
+                    textoInformacion2.add("Zapatos Lombardy"+'\n');
+                    /*textoInformacion2.add("Cedula: "+ Login.ClientesDatos.getCedulaCliente());*/
+                    textoInformacion2.add("Nombre: "+ Login.ClientesDatos.getNombreCliente() + '\n');
+                    textoInformacion2.add("Apellido: "+ Login.ClientesDatos.getApellidoCliente() + '\n');
+                    textoInformacion2.add("Correo: "+ Login.ClientesDatos.getEmailCliente() + '\n' );
+                    textoInformacion2.add("Numero de la compra: "+detalleCompra.getNumero_pedido() + '\n');
+                    pdfDocumento.add(textoInformacion2);
+
                     PdfPTable table = new PdfPTable(3);
                     table.addCell("Nombre del producto");
                     table.addCell("Cantidad del producto");
