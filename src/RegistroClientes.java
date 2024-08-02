@@ -33,7 +33,12 @@ public class RegistroClientes {
                         || apellido.getText().isEmpty() || correo.getText().isEmpty() || contra.getText().isEmpty()){
                     confirmacion.setText("Llene los campos vacíos porfavor");
                     return;
+                    /**
+                     *"isEmpty()" ayuda a la comprobación de los campos vacíos.
+                     * Si se encuentra que el campo esta vacio se coloca en el JLabel el error.
+                     * */
                 } else {
+                    /*Creacion de un objeto y seteo del mismo*/
                     Clientes clienteNuevo = new Clientes();
                     clienteNuevo.setNombre(nombre.getText());
                     clienteNuevo.setApellido(apellido.getText());
@@ -45,11 +50,14 @@ public class RegistroClientes {
                     } catch (NumberFormatException exception){
                        confirmacion.setText("En el campo cedula, solo se aceptan numeros");
                     }
+                    /**
+                     * @param try utilizado para verificar si lo colocado en la ventana es un numero
+                     * @param catch utilizado para indicarle al usuario el error si l que esta insertando son caracteres no permitidos
+                     * */
                     /*Linea de conexión*/
                     try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                         MongoDatabase db = mongoClient.getDatabase("Proyectofinalpoo");
                         MongoCollection<Document> collection = db.getCollection("clientes");
-                        /*String contraseniaEncriptada = hashPassword(clienteNuevo.getContrasenia());*/
                         Document registroClientes = new Document("cedula", clienteNuevo.getCedula())
                                 .append("nombre", clienteNuevo.getNombre())
                                 .append("apellido", clienteNuevo.getApellido())
@@ -60,6 +68,12 @@ public class RegistroClientes {
                     } catch (MongoException exception) {
                         confirmacion.setText("El cliente no se registro correctamente");
                     }
+                    /**
+                     * @param try Intenta la conexión con la base de datos.
+                     * Se crea una colleccion "clientes" en la base de datos "Proyectofinalpoo".
+                     * Se crea un documento que tendra dentro los datos del cliente que servirá tanto para la factura como para la gestion de login
+                     * @param catch Si no se genera la conexión adecuadamente se presenta en el JLabel "confirmacion" un mensaje de insatisfacción con la conexión de la base de datos.
+                     * */
                 }
 
             }
@@ -71,18 +85,13 @@ public class RegistroClientes {
                 frame.pack();
                 frame.setContentPane(new Login(frame).panelLogin);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setSize(800, 600);
+                frame.setSize(1000, 800);
                 frame.setVisible(true);
                 frame.setLocationRelativeTo(null);
                 frame1.setVisible(false);
             }
         });
     }
-
-    /*private String hashPassword(String contrasenia) {
-
-    }*/
-
 }
 
 

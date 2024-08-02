@@ -303,7 +303,7 @@ public class SubirProductos {
                 frame.setSize(800, 600);
                 frame.setVisible(true);
                 frame.setLocationRelativeTo(null);
-                frame1.setVisible(true);
+                frame1.setVisible(false);
             }
         });
     }

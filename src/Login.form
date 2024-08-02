@@ -29,7 +29,8 @@
           </grid>
         </constraints>
         <properties>
-          <background color="-3887131"/>
+          <background color="-2965004"/>
+          <font name="Arial Rounded MT Bold" size="16" style="0"/>
           <foreground color="-16777216"/>
         </properties>
       </component>
@@ -73,6 +74,7 @@
         </constraints>
         <properties>
           <background color="-2965004"/>
+          <font name="Arial Rounded MT Bold" size="16" style="0"/>
           <foreground color="-16777216"/>
         </properties>
       </component>

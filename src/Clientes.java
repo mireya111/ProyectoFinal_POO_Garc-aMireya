@@ -6,6 +6,15 @@ public class Clientes {
     String contrasenia;
     /*Constructores*/
     public Clientes() {}
+    /**
+     * Se almacena la información colocada por el cliente en la ventana "RegistroClientes".
+     *
+     * @param cedula El número de cédula del cliente.
+     * @param nombre El nombre del cliente.
+     * @param apellido El apellido del cliente.
+     * @param correo El correo electrónico del cliente.
+     * @param contrasenia La contraseña del cliente.
+     */
     public Clientes(int cedula, String nombre, String apellido, String correo, String contrasenia) {
         this.cedula = cedula;
         this.nombre = nombre;

@@ -8,7 +8,14 @@ public class Compra extends Productos {
     Date fecha;
     /*Constructores*/
     public Compra() {}
-
+    /**
+     * Se almacena datos de de cada compra realizada por el cliente".
+     *
+     * @param numero_pedido Identificador de cada pedido.
+     * @param cantidadProducto Cantidad del producto que desea el cliente.
+     * @param precioTotal Precio total de todos los productos escogidos por el cliente.
+     * @param fecha La fecha en la que el cliente realizo la compra.
+     */
     public Compra(int numero_pedido, int cantidadProducto, double precioTotal, Date fecha) {
         this.numero_pedido = numero_pedido;
         this.cantidadProducto = cantidadProducto;

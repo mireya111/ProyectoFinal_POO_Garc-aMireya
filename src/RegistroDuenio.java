@@ -26,6 +26,7 @@ public class RegistroDuenio {
         registrarEmpleadoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                /*Creacion de un objeto y seteo del mismo*/
                 Empleados empleadoNuevo = new Empleados();
                 empleadoNuevo.setCodigo(codigo.getText());
                 empleadoNuevo.setNombre(nombre.getText());
