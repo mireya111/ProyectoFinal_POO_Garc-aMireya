@@ -56,6 +56,15 @@ public class SubirProductos {
             return null;
         }
     };
+    /**
+     * Para la inserción de diferentes datos a las columnas de la tabla, se tiene que especificar el tipo de datos que tendra cada una
+     * columna 1 = 0, se recepta numeros enteros
+     * columna 2 = 1, se recepta cadenas de texto
+     * columna 3 = 2, se recepta numeros enteros
+     * columna 4 = 3, se receptan decimales
+     * columna 5 = 4, se receptan imagenes
+     * Si no se encuentran los indices acteriormente expuesto retornara un valor null.
+     * */
     public SubirProductos(JFrame frame) {
         frame1=frame;
         /*Para acceder a los archivos y que se muestre antes de subir el producto*/
@@ -66,6 +75,14 @@ public class SubirProductos {
                 JFileChooser imagenesEmpleado = new JFileChooser();
                 imagenesEmpleado.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Imagenes", "jpg", "png", "jpeg", "gif"));
                 int resultado = imagenesEmpleado.showOpenDialog(foto);
+                /**
+                 * @param JFileChooser Se crea un objeto de esta clase, un objeto que será una imagen
+                 * Con setFileFilter se determinan las extenciones de imagenes que se aceptarán
+                 * @param resultado Se abre el cuadro de diálogo de selección de archivos y se almacena el resultado de la acción del usuario.
+                 * El usuario puede seleccionar una imagen y aceptar.
+                 * El usuario puede seleccionar una imagen y cancelar.
+                 * La seleccion de la imagen es inválida.
+                 * */
                 /*Si se selecciona un archivo ¿Qué sucede?*/
                 if (resultado == JFileChooser.APPROVE_OPTION) {
                     selectFile = imagenesEmpleado.getSelectedFile();
@@ -83,6 +100,11 @@ public class SubirProductos {
                         foto2.setText("No se pudo cargar la imagen");
                     }
                 }
+                /**
+                 * Si se lecciona una imagen y se acepta su exportación.
+                 * Se obtendra la direccion de de la imagen y visualización de la misma en una JLabel llamado "foto2".
+                 * @param imagenEscalada se adapta a las dimenciones del JLabel "foto2".
+                 * */
             }
         });
         subir.addActionListener(new ActionListener() {
@@ -97,6 +119,9 @@ public class SubirProductos {
                 productoNuevo.setPrecio(Double.parseDouble(precioProducto.getText()));
                 /*Asignación a una variable la ruta generada cuando el usuario selecciona una imagen*/
                 String rutaImagen = ruta.getText();
+                /**
+                 * @param rutaImagen Se almacena la ruta de la imagen
+                 * */
                 /*No se lo utiliza, pero es parte de la clase "Productos", se setea la imagen seleccionada por el empleado*/
                 productoNuevo.setImagen(selectFile);
                 /*Limpieza de errores*/
@@ -104,12 +129,20 @@ public class SubirProductos {
                 camposVacios.setText("");
                 if (codigoProducto.getText().isEmpty() || nombreProducto.getText().isEmpty() || stock.getText().isEmpty() || precioProducto.getText().isEmpty()){
                     errorTabla.setText("Se detecto campos vacíos, llene los campos porfavor");
+                    /**
+                     *"isEmpty()" ayuda a la comprobación de los campos vacíos.
+                     * Si se encuentra que el campo esta vacio se coloca en el JLabel el error.
+                     * */
                 }
                 try{
                     productoNuevo.setCodigo(Integer.parseInt(codigoProducto.getText()));
                 }catch (NumberFormatException ex){
                     errorCodigo.setText("El codigo solo deben ser numeros enteros");
                 }
+                /**
+                 * @param try utilizado para verificar si lo colocado en la ventana es un numero
+                 * @param catch utilizado para indicarle al usuario el error si se esta insertando son caracteres no permitidos
+                 * */
                 /*Linea de conexión, mensaje de error cuando el usuario digite algo que no sea un numero número*/
                 try {
                     productoNuevo.setCantidadDisponible(Integer.parseInt(stock.getText()));
@@ -117,6 +150,10 @@ public class SubirProductos {
                     errorCantidad.setText("La cantidad disponible debe ser un número entero.");
                     return;
                 }
+                /**
+                 * @param try utilizado para verificar si lo colocado en la ventana es un numero
+                 * @param catch utilizado para indicarle al usuario el error si se esta insertando son caracteres no permitidos
+                 * */
                 /*Linea de conexión, mensaje de error cuando el usuario digite algo que no sea un numero double*/
                 try {
                     productoNuevo.setPrecio(Double.parseDouble(precioProducto.getText()));
@@ -124,6 +161,10 @@ public class SubirProductos {
                     errorPrecio.setText("El precio debe ser un número válido.");
                     return;
                 }
+                /**
+                 * @param try utilizado para verificar si lo colocado en la ventana es un numero decimal
+                 * @param catch utilizado para indicarle al usuario el error si se esta insertando son caracteres no permitidos
+                 * */
                 /*Almacenamiento de todos los datos del producto*/
                 try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                     MongoDatabase db = mongoClient.getDatabase("Proyectofinalpoo");
@@ -145,8 +186,15 @@ public class SubirProductos {
                     modelo.addColumn("Imagen");
                     /*Seteo del nuevo modelo a la tabla vacía*/
                     resultados.setModel(modelo);
+                    /**
+                     * Con el "modelo" podemos insertar las diferentes columnas
+                     * @param modelo Define cómo se estructuran y manejan los datos que se muestran en la tabla.
+                     */
                     /*Busqueda para la muestra de los detalles de los productos publicados*/
                     FindIterable<Document> documentos = collection.find();
+                    /**
+                     * @param FindIterable Busca una determinada coleccion, para los datos arrogados insertarlos en la tabla"
+                     */
                     for (Document documento : documentos) {
                         int codigo = documento.getInteger("Codigo", 0);
                         String nombre = documento.getString("Nombre_producto");
@@ -154,6 +202,7 @@ public class SubirProductos {
                         double precio = documento.getDouble("Precio");
                         String imagenRuta = documento.getString("Imagen");
                         ImageIcon imagenIcono = null;
+
                         try {
                             /*Lectura de la imagen*/
                             Image img = ImageIO.read(new File(imagenRuta));
@@ -163,8 +212,16 @@ public class SubirProductos {
                             /*Forma una imagen blanca si ocurre algun error*/
                             imagenIcono = new ImageIcon(new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB));
                         }
+                        /**
+                         * @param img Se lee la ruta almacenada cuando se exporto la imagen y se la hace visible en la columna final.
+                         * Si ocurre un error, en la tabla se colocara una igen en blaco, un campo vacío.
+                         * @param BufferedImage Indica que la imagen se podrá modificar.
+                         * */
                         /*Se añade los valores de las celdas de una fila, arreglo de objetos*/
                         modelo.addRow(new Object[]{codigo, nombre, cantidad, precio, imagenIcono});
+                        /**
+                         * Con "addRow" se añade una nueva fila al modelo de la tabla con los datos del producto especificados en el arreglo de objetos.
+                         * */
                     }
                     /*Darle a la tabla vacía un modelo con lo antes colocado*/
                     resultados.setModel(modelo);

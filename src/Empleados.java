@@ -6,6 +6,15 @@ public class Empleados {
     String contrasenia;
     /*Contructores*/
     public Empleados() {}
+    /**
+     * Se almacena la información colocada por el cliente en la ventana "RegistroDuenio".
+     *
+     * @param codigo El codigo entregado al empleado.
+     * @param nombre El nombre del empleado.
+     * @param apellido El apellido del empleado.
+     * @param correo El correo electrónico del empleado.
+     * @param contrasenia La contraseña del empleado.
+     */
     public Empleados(String codigo, String nombre, String apellido, String correo, String contrasenia) {
         this.codigo = codigo;
         this.nombre = nombre;
