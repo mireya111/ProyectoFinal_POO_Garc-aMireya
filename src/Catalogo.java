@@ -55,6 +55,7 @@ public class Catalogo extends JFrame {
             return null;
         }
     };
+
     DefaultTableModel modeloDos = new DefaultTableModel() {
         @Override
         public Class<?> getColumnClass(int column) {
@@ -75,12 +76,19 @@ public class Catalogo extends JFrame {
         frame1=frame;
         Productos catalogoProduct = new Productos();
         catalogoProduct.catalogo(modelo, catalogosProductos, erroresCatalogo);
+        /**
+         * @return catalogoProduct El catalogo completo de los productos publicados por el cliente.
+         */
         /*Conformación de la tabla carrito*/
         modeloDos.addColumn("Codigo Producto");
         modeloDos.addColumn("Nombre del producto");
         modeloDos.addColumn("Cantidad ha comprar");
         modeloDos.addColumn("Precio del producto");
         carritoProducto.setModel(modeloDos);
+        /**
+         * @param modeloDos Modelo de la tabla carrito que se visualizará cuando el cliente agregue productos al carrito.
+         * @param carritoProducto La tabla que tendrá los productos que comprará el cliente, servirá para la generación de la factura.
+         */
         /*Para que la fila se agrande*/
         carritoProducto.setRowHeight(30);
         agregarCarrito.addActionListener(new ActionListener() {
@@ -92,6 +100,10 @@ public class Catalogo extends JFrame {
                     confirmacionErrores.setText("El campo de cantidad no puede estar vacío.");
                     return;
                 }
+                /**
+                 * @param cantidadCliente Numero de unidades que se desea el clietne por producto.
+                 * @param confirmacionErrores Presenta al usuario los errores, si el campo esta vacio se depleja.
+                 */
 
                 /*Validacion para que el campo que almacena la cantidad solicitante no sea un numero negativo*/
                 /*La validacion para que el campo solo reciba caracteres numericos*/
@@ -106,18 +118,33 @@ public class Catalogo extends JFrame {
                     confirmacionErrores.setText("Ingrese un número válido para la cantidad.");
                     return;
                 }
+                /**
+                 * @param cantidadSolicitada Almacena el valor entero que representa la cantidad de unidades solicitadas por el cliente.
+                 * @param confirmacionErrores Presenta un mensaje de error en un JLabel.
+                 */
 
                 /*Validacion para que se seleccione un producto*/
                 if (catalogosProductos.getSelectedRow() == -1) {
                     erroresCatalogo.setText("Se debe seleccionar un producto");
                     return;
                 }
+                /**
+                 * @param catalogosProductos Tabla que posee los productos publicados por los empleados de la empresa de zaapatos.
+                 */
 
                 /*Obtencion de la información del producto*/
                 int codigoDelProducto = Integer.parseInt(modelo.getValueAt(catalogosProductos.getSelectedRow(), 0).toString());
                 String nombreDelProducto = modelo.getValueAt(catalogosProductos.getSelectedRow(), 1).toString();
                 int cantidadDelProducto = Integer.parseInt(modelo.getValueAt(catalogosProductos.getSelectedRow(), 2).toString());
                 Double precioDelProducto = Double.parseDouble(modelo.getValueAt(catalogosProductos.getSelectedRow(), 3).toString());
+                /**
+                 * @param catalogosProductos La tabla de productos desde la cual se trae la información del producto seleccionado.
+                 * @param modelo El modelo de la tabla que contiene los datos de los productos.
+                 * @return codigoDelProducto El código del producto extraído de la primera columna de la fila seleccionada.
+                 * @return nombreDelProducto El nombre del producto extraído de la segunda columna de la fila seleccionada.
+                 * @return cantidadDelProducto La cantidad del producto disponible extraída de la tercera columna de la fila seleccionada.
+                 * @return precioDelProducto El precio del producto extraído de la cuarta columna de la fila seleccionada.
+                 */
 
                 /*Validacion para que no se exceda el valor del estock*/
                 if (cantidadSolicitada > cantidadDelProducto) {
@@ -129,10 +156,17 @@ public class Catalogo extends JFrame {
                 Compra compraNueva = new Compra();
                 compraNueva.setCantidadProducto(cantidadSolicitada);
                 Double precioPorCantidad = compraNueva.getCantidadProducto() * precioDelProducto;
+                /**
+                 * @param precioPorCantidad La cantidad a pagar por cada producto, se multipla la cantidad que desea el cliente por el precio del producto.
+                 * @param compraNueva Objeto al que se le setea la cantidad solicitada por el cliente.
+                 */
 
                 /*Calculo para la disminución de la cantidad del producto*/
                 int cantidadDisminuye = cantidadDelProducto - cantidadSolicitada;
-
+                /**
+                 * @param cantidadDisminuye Es la cantidad disponible que se mostrara al público cuando se generen compras, es decir,
+                 *                          cantidad disponible actual menos la cantidad que desea el cliente.
+                 */
                 /*Linea de conexion*/
                 try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                     MongoDatabase db = mongoClient.getDatabase("Proyectofinalpoo");
@@ -140,28 +174,45 @@ public class Catalogo extends JFrame {
 
                     /*A qué registro*/
                     Document filtro = new Document("Codigo", codigoDelProducto);
+                    /**
+                     * @param filtro Documento que se utiliza para buscar el registro del producto que se actualizará.
+                     *               Filtra el registro basado en el codigo del producto.
+                     */
 
                     /*Qué parte del registro se cambiará*/
                     Document actualizacion = new Document("$set", new Document("Cantidad_disponible", cantidadDisminuye));
+                    /**
+                     * @param actualizacion Documento que define la actualización del campo 'Cantidad_disponible' en el registro.
+                     *                      Actualiza la cantidad disponible del producto en la base de datos.
+                     */
                     UpdateResult resultado = collection.updateOne(filtro, actualizacion);
-
+                    /**
+                     * @param resultado Resultado de la operación de actualización.
+                     */
                     /*Verificar si el producto se modificó, no se agrega en la interfaz gráfica solo en el intelligent*/
                     System.out.println("Documentos modificados: " + resultado.getModifiedCount());
 
                     /*Visualizacion de la tabla*/
                     modelo.setValueAt(cantidadDisminuye, catalogosProductos.getSelectedRow(), 2);
                     confirmacionErrores.setText("Se ha agregado al carrito el producto " + nombreDelProducto);
-
+                    /**
+                     * @param modelo Actualiza la cantidad disponible del producto en la fila seleccionada de la tabla.
+                     */
                     /*Seteo de valores*/
                     compraNueva.setCantidadProducto(cantidadSolicitada);
                     compraNueva.setPrecioTotal(precioPorCantidad);
                     contadorPrecio += precioPorCantidad;
                     totalPagar.setText(String.format("%.2f", contadorPrecio));
-
+                    /**
+                     * @param modeloDos Anade una nueva fila con los detalles del producto al carrito en la interfaz gráfica.
+                     */
                     /*Colocación de valores en la tabla carrito*/
                     modeloDos.addRow(new Object[]{codigoDelProducto, nombreDelProducto, cantidadSolicitada, compraNueva.getPrecioTotal()});
                 } catch (Exception ex) {
                     confirmacionErrores.setText("Error al añadir producto al carrito: " + ex.getMessage());
+                    /**
+                     * @param confirmacionErrores Presenta al cliente un error al agregar un produto al carrito
+                     */
                 }
 
             }
@@ -175,6 +226,10 @@ public class Catalogo extends JFrame {
                     cantidadCliente.setText(modeloDos.getValueAt(carritoProducto.getSelectedRow(), 2).toString());
                 }
             }
+            /**
+             * @param  editarProducto El bóton hace que la cantidad solicitada por el cliente en la tabla carrito se ponga a disponibilidad para ser modificada
+             *                        En el lugar donde el usuario ingresa la cantidad que desea se presentan los valores de la fila seleccionada propensa ha ser modificada.
+             */
         });
         actualizarPedido.addActionListener(new ActionListener() {
             @Override

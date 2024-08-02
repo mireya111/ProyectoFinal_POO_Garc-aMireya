@@ -56,15 +56,7 @@ public class SubirProductos {
             return null;
         }
     };
-    /**
-     * Para la inserción de diferentes datos a las columnas de la tabla, se tiene que especificar el tipo de datos que tendra cada una
-     * columna 1 = 0, se recepta numeros enteros
-     * columna 2 = 1, se recepta cadenas de texto
-     * columna 3 = 2, se recepta numeros enteros
-     * columna 4 = 3, se receptan decimales
-     * columna 5 = 4, se receptan imagenes
-     * Si no se encuentran los indices acteriormente expuesto retornara un valor null.
-     * */
+
     public SubirProductos(JFrame frame) {
         frame1=frame;
         /*Para acceder a los archivos y que se muestre antes de subir el producto*/
@@ -121,7 +113,7 @@ public class SubirProductos {
                 String rutaImagen = ruta.getText();
                 /**
                  * @param rutaImagen Se almacena la ruta de la imagen
-                 * */
+                 */
                 /*No se lo utiliza, pero es parte de la clase "Productos", se setea la imagen seleccionada por el empleado*/
                 productoNuevo.setImagen(selectFile);
                 /*Limpieza de errores*/
@@ -132,7 +124,7 @@ public class SubirProductos {
                     /**
                      *"isEmpty()" ayuda a la comprobación de los campos vacíos.
                      * Si se encuentra que el campo esta vacio se coloca en el JLabel el error.
-                     * */
+                     */
                 }
                 try{
                     productoNuevo.setCodigo(Integer.parseInt(codigoProducto.getText()));
@@ -142,7 +134,7 @@ public class SubirProductos {
                 /**
                  * @param try utilizado para verificar si lo colocado en la ventana es un numero
                  * @param catch utilizado para indicarle al usuario el error si se esta insertando son caracteres no permitidos
-                 * */
+                 */
                 /*Linea de conexión, mensaje de error cuando el usuario digite algo que no sea un numero número*/
                 try {
                     productoNuevo.setCantidadDisponible(Integer.parseInt(stock.getText()));
@@ -153,7 +145,7 @@ public class SubirProductos {
                 /**
                  * @param try utilizado para verificar si lo colocado en la ventana es un numero
                  * @param catch utilizado para indicarle al usuario el error si se esta insertando son caracteres no permitidos
-                 * */
+                 */
                 /*Linea de conexión, mensaje de error cuando el usuario digite algo que no sea un numero double*/
                 try {
                     productoNuevo.setPrecio(Double.parseDouble(precioProducto.getText()));
@@ -164,7 +156,7 @@ public class SubirProductos {
                 /**
                  * @param try utilizado para verificar si lo colocado en la ventana es un numero decimal
                  * @param catch utilizado para indicarle al usuario el error si se esta insertando son caracteres no permitidos
-                 * */
+                 */
                 /*Almacenamiento de todos los datos del producto*/
                 try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                     MongoDatabase db = mongoClient.getDatabase("Proyectofinalpoo");
@@ -189,6 +181,13 @@ public class SubirProductos {
                     /**
                      * Con el "modelo" podemos insertar las diferentes columnas
                      * @param modelo Define cómo se estructuran y manejan los datos que se muestran en la tabla.
+                     * Para la inserción de diferentes datos a las columnas de la tabla, se tiene que especificar el tipo de datos que tendra cada una
+                     * columna 1 = 0, se recepta numeros enteros
+                     * columna 2 = 1, se recepta cadenas de texto
+                     * columna 3 = 2, se recepta numeros enteros
+                     * columna 4 = 3, se receptan decimales
+                     * columna 5 = 4, se receptan imagenes
+                     * Si no se encuentran los indices acteriormente expuesto retornara un valor null.
                      */
                     /*Busqueda para la muestra de los detalles de los productos publicados*/
                     FindIterable<Document> documentos = collection.find();
@@ -216,12 +215,12 @@ public class SubirProductos {
                          * @param img Se lee la ruta almacenada cuando se exporto la imagen y se la hace visible en la columna final.
                          * Si ocurre un error, en la tabla se colocara una igen en blaco, un campo vacío.
                          * @param BufferedImage Indica que la imagen se podrá modificar.
-                         * */
+                         */
                         /*Se añade los valores de las celdas de una fila, arreglo de objetos*/
                         modelo.addRow(new Object[]{codigo, nombre, cantidad, precio, imagenIcono});
                         /**
                          * Con "addRow" se añade una nueva fila al modelo de la tabla con los datos del producto especificados en el arreglo de objetos.
-                         * */
+                         */
                     }
                     /*Darle a la tabla vacía un modelo con lo antes colocado*/
                     resultados.setModel(modelo);
@@ -237,16 +236,32 @@ public class SubirProductos {
             public void actionPerformed(ActionEvent e) {
                 if (resultados.getSelectedRow() == -1) {
                     errorTabla.setText("No se ha seleccionado ningún producto");
+                    /**
+                     * Si getSelectedTow es igual a -1 quiere decir que ninguna fila ha sido seleccionada, si sucede  se presenta en un JLabel un error
+                     */
                 } else {
                     errorTabla.setText("");
                     camposVacios.setText("");
                     try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                         MongoDatabase db = mongoClient.getDatabase("Proyectofinalpoo");
                         MongoCollection<Document> collection = db.getCollection("cadaProducto");
-
+                        /**
+                         * Obtener el valor de la celda antes de eliminar la fila.
+                         *
+                         * @param modelo El modelo de la tabla del cual se obtiene el valor.
+                         * @param resultados La tabla de la cual se selecciona la fila.
+                         * @return El código del producto que se va a eliminar.
+                         */
                         /*Obtener el valor de la celda antes de eliminar la fila*/
                         int codigo = Integer.parseInt(modelo.getValueAt(resultados.getSelectedRow(), 0).toString());
                         Document filtro = new Document("Codigo", codigo);
+                        /**
+                         * Eliminar el documento de MongoDB.
+                         *
+                         * @param collection La colección de MongoDB de la cual se elimina el documento.
+                         * @param filtro El filtro para identificar el documento a eliminar.
+                         * @return El resultado de la operación de eliminación.
+                         */
                         /* Eliminar el documento de MongoDB*/
                         DeleteResult resultado = collection.deleteOne(filtro);
                         /*Confirmación de cuantos documentos se han eliminado*/
@@ -255,6 +270,10 @@ public class SubirProductos {
                         /*Eliminar la fila del modelo de la tabla*/
                         modelo.removeRow(resultados.getSelectedRow());
                         errorTabla.setText("Se ha eliminado correctamente");
+                        /**
+                         * Con getValueAt(resultados.getSelectedRow(), 0) se traen los datos de una columna determinada de una fila seleccionada
+                         * El dato obtenido de la fila seleccionada se elimina de la tabla con "removeRow" y en la base de datos con "deleteOne".
+                         */
                     } catch (Exception ex) {
                         errorTabla.setText("Error al eliminar el producto: " + ex.getMessage());
                     }
@@ -280,6 +299,10 @@ public class SubirProductos {
                     ImageIcon imagen = (ImageIcon) modelo.getValueAt(resultados.getSelectedRow(), 4);
                     foto2.setIcon(imagen);
                 }
+                /**
+                 * @param  editarProductoButton El bóton hace que la información publicada de la fila seleccionada en la tabla de productos se ponga a disponibilidad para ser modificada
+                 * En los lugares donde el usuario ingresa la información se presentan los valores de la fila seleccionada propensa ha ser modificada.
+                 */
             }
         });
 
@@ -331,6 +354,13 @@ public class SubirProductos {
                         } catch (IOException ex) {
                             modelo.setValueAt(null, resultados.getSelectedRow(), 4);
                         }
+                        /**
+                         * Actualiza la imagen en la tabla 'resultados' en la fila seleccionada y en la columna de índice 4.
+                         *
+                         * @param rutaImagen La ruta del archivo de imagen que se debe leer y actualizar en la tabla.
+                         * @param modelo El modelo de la tabla que se va a actualizar.
+                         * @param resultados La tabla en la que se mostrará la imagen actualizada.
+                         */
                     }
                 }
             }
