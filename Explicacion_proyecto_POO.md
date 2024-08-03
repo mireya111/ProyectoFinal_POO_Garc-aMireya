@@ -37,7 +37,7 @@ Clase Productos
 Se almacena la información de los productos publicados.
 ![image](https://github.com/user-attachments/assets/209364d8-265f-4860-ba4c-8df0309c5259)
 ![image](https://github.com/user-attachments/assets/7164ca25-61c9-4fff-835f-5551531a9eb2)
-Método para la visualización del catalogo cada vez que los empleados suban un producto
+Método para la visualización del catalogo cada vez que los empleados suban un producto.
 ![image](https://github.com/user-attachments/assets/2ca89455-0e5b-4997-af79-1f707b818513)
 ![image](https://github.com/user-attachments/assets/7b68b720-b627-4dba-b4e0-df9dba890d40)
 
