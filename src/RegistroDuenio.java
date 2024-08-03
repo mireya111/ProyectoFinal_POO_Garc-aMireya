@@ -20,7 +20,9 @@ public class RegistroDuenio {
     private JLabel confirmacion;
     private JButton regresar;
     private JFrame frame1;
-
+    /**
+     *  @param frame frame JFrame principal de la aplicación.
+     * */
     public RegistroDuenio(JFrame frame) {
         frame1=frame;
         registrarEmpleadoButton.addActionListener(new ActionListener() {

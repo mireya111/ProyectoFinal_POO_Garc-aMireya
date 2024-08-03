@@ -17,6 +17,14 @@ public class Productos extends Clientes{
     File imagen;
     /*Constructores*/
     public Productos(){}
+    /**
+     * Se almacena la información de los productos publicados
+     * @param codigo El codigo del producto publicado
+     * @param nombre El nombre del producto publicado
+     * @param cantidadDisponible La cantidad disponible del producto publicado
+     * @param precio El precio de cada producto publicado
+     * @param imagen La imagen de cada producto
+     */
     public Productos(int codigo, String nombre, int cantidadDisponible, double precio, File imagen) {
         this.codigo = codigo;
         this.nombre = nombre;

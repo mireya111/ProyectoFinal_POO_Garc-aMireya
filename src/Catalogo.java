@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.itextpdf.text.DocumentException;
@@ -237,6 +238,9 @@ public class Catalogo extends JFrame {
                 /*Creacion de objetos y setearlos*/
                 Compra compraNueva = new Compra();
                 compraNueva.setCantidadProducto(Integer.parseInt(cantidadCliente.getText()));
+                /**
+                 * @param compraNueva objeto que guarda la cantidad del producto actual.
+                 */
 
                 /*Validacion de la seleccion de un producto*/
                 if (carritoProducto.getSelectedRow() == -1) {
@@ -247,6 +251,9 @@ public class Catalogo extends JFrame {
                         confirmacionErrores.setText("El campo de cantidad no puede estar vacío.");
                         return;
                     }
+                    /**
+                     * @param confirmacionErrores si se encuentra que el campo donde se ingresa la cantidad se encuentra vacio se coloca en un JLabel el error.
+                     */
 
                     /*Validacion para que el campo que almacena la cantidad solicitada no sea un número negativo*/
                     /*Validacion para que el campo solo reciba caracteres numéricos*/
@@ -261,11 +268,20 @@ public class Catalogo extends JFrame {
                         confirmacionErrores.setText("Ingrese un número válido, este campo no acepta caracteres.");
                         return;
                     }
+                    /**
+                     * @param  cantidadSolicitada Almacena el valor entero que representa la cantidad de unidades solicitadas por el cliente.
+                     * @param confirmacionErrores Almacena el error si lo ingresado por el usuario es un caracter no numerico
+                     */
 
                     /*Obtener la información del producto seleccionado en la tabla carritoProducto*/
                     int codigoDelProductoCarrito = Integer.parseInt(modeloDos.getValueAt(carritoProducto.getSelectedRow(), 0).toString());
                     String nombreDelProducto = modeloDos.getValueAt(carritoProducto.getSelectedRow(), 1).toString();
                     int cantidadAnteriorCarrito = Integer.parseInt(modeloDos.getValueAt(carritoProducto.getSelectedRow(), 2).toString());
+                    /**
+                     * @return codigoDelProductoCarrito Codigo del producto escogido por el cliente y visualizado en la tabla "carritoProducto (en esta tabla se selecciona el producto)"
+                     * @return nombreDelProducto Nombre del producto seleccionado por el cliente y visualizado en la tabla "carritoProducto".
+                     * @return cantidadAnteriorCarrito Cantidad del producto que estaba previamente en el carrito del cliente.
+                     */
 
                     /*Linea de conexion*/
                     try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
@@ -274,22 +290,36 @@ public class Catalogo extends JFrame {
 
                         /* Realiza las consultas */
                         FindIterable<Document> documento1 = collection.find();
-
+                        /**
+                         * @param documento1 Coleccion "cadaProducto", aquí se encuentran los productos publicados por el empleado.
+                         */
                         /*Verificacion de que si existe un registro en la base de datos con datos iguales a los que se pretende actualizar en la tabla carritoProducto*/
                         boolean productoEncontrado = false;
                         for (Document documento : documento1) {
                             Integer codigo = documento.getInteger("Codigo");
                             String nombre = documento.getString("Nombre_producto");
-
+                            /**
+                             * @param codigo Codigo del producto publicado por el empleado.
+                             * @param nombre Nombre del producto publicado por el empleado.
+                             */
                             if (codigo != null && nombre != null && codigo.equals(codigoDelProductoCarrito) && nombre.equals(nombreDelProducto)) {
                                 productoEncontrado = true;
                                 int cantidadAnteriorCatalogo = documento.getInteger("Cantidad_disponible");
                                 int cantidadAntetior = cantidadAnteriorCatalogo + cantidadAnteriorCarrito;
                                 int cantidadNuevaProducto = cantidadAntetior - compraNueva.getCantidadProducto();
-
+                                /**
+                                 * @param productoEncontrado Variable que demuestra la presencia del producto en la base de datos.
+                                 * @param cantidadAnteriorCatalogo Cantidad disponible actualmente del producto, cantidad que se disminuyo cuando se agrego el producto al carrito.
+                                 * @param cantidadAnterior Suma de la cantidad disminuida y la cantidad solicitada, dando comol resultado la cantidad disponible anterior a la agregación del carrito.
+                                 * @param cantidadNuevaProducto Resta de la cantidad disponible anterior a la agregación del carrito y la cantidad nueva solicitada por el cliente.
+                                 */
                                 /*Nuevo precio del producto*/
                                 Double precioPorProducto = documento.getDouble("Precio");
                                 Double precioNuevoPorProducto = compraNueva.getCantidadProducto() * precioPorProducto;
+                                /**
+                                 * @param precioPorProducto Precio encontrado en la base de datos.
+                                 * @param precioNuevoPorProducto Precio total deacuerdo a la cantidad deseada por producto seleccionado.
+                                 */
 
                                 System.out.println("Precio nuevo del producto: "+ precioNuevoPorProducto);
 
@@ -297,6 +327,11 @@ public class Catalogo extends JFrame {
                                 Document filtro = new Document("Codigo", codigoDelProductoCarrito);
                                 Document actualizacion = new Document("$set", new Document("Cantidad_disponible", cantidadNuevaProducto));
                                 UpdateResult resultado = collection.updateOne(filtro, actualizacion);
+                                /**
+                                 * @param filtro Identifica el documento a eliminar.
+                                 * @param actualizacion Que parametros del docuemento se actualizará.
+                                 * @return resultado El resultado de la operación de la actualización.
+                                 */
 
                                 /*Verificar si el producto se modifico*/
                                 System.out.println("Documentos modificados: " + resultado.getModifiedCount());
@@ -306,6 +341,9 @@ public class Catalogo extends JFrame {
                                 modeloDos.setValueAt(compraNueva.getCantidadProducto(), carritoProducto.getSelectedRow(), 2);
                                 modeloDos.setValueAt(precioNuevoPorProducto, carritoProducto.getSelectedRow(), 3);
                                 confirmacionErrores.setText("Se ha modificado el carrito en el producto " + nombreDelProducto);
+                                /**
+                                 * @return La tabla con las modificaciones realizadas, tanto en la tabla del catalogo como la del carrito.
+                                 */
                                 break;
                             }
                         }
@@ -330,6 +368,9 @@ public class Catalogo extends JFrame {
                     modeloDos.removeRow(carritoProducto.getSelectedRow());
                     errorCarrito.setText("Se ha eliminado correctamente");
                 }
+                /**
+                 * @param errorCarrito  Si no se selecciona una fila se presentará un -1 y se escribira un error en JLabel, también se confirma la eliminación exitosa de la fila (producto que se desea comprar)
+                 */
             }
         });
         generarOrden.addActionListener(new ActionListener() {
@@ -339,8 +380,12 @@ public class Catalogo extends JFrame {
                 com.itextpdf.text.Document pdfDocumento = new com.itextpdf.text.Document();
                 /*Crear un objeto y setear los valores*/
                 Compra detalleCompra = new Compra();
+                detalleCompra.setFecha(new Date());
                 int numeroLimite = 1;
                 contadorPdfs+=numeroLimite;
+                /**
+                 * @param contadorPdfs Para que se generen varios pdfs, pdf_1, pdf_2, pdf_3 y así sucesivamente.
+                 */
                 detalleCompra.setNumero_pedido(numeroLimite);
                 try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")){
                     MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
@@ -348,9 +393,19 @@ public class Catalogo extends JFrame {
                     /*Insertar el numero del pedido y la fecha del pedido*/
                     Document detalleDocumento = new Document("Numero_pedido", detalleCompra.getNumero_pedido())
                             .append("Fecha_pedido", detalleCompra.getFecha());
+                    /**
+                     * @param detalleDocumento Información de cada compra realizada por el cliente.
+                     *                         Contiene los siguientes campos:
+                     *                         - "Numero_pedido": Número de identificación del pedido.
+                     *                         - "Fecha_pedido": Fecha en que se realizó el pedido.
+                     *                         - "Productos": Todos los productos seleccionados por el cliente, con el nombre, la cantidad y el precio por producto.
+                     */
 
                     /*Se almacenara una lista en la base de datos para el detalle de los productos, por lo tanto, se crea la misma*/
                     List<Document> productos = new ArrayList<>();
+                    /**
+                     * @param productos Arreglo donde se insertaran todos los productos seleccionados por el cliente
+                     */
 
                     /*Agregar lo escogido por el cliente a la lista productos*/
                     for (int i = 0; i < carritoProducto.getRowCount(); i++) {
@@ -361,6 +416,11 @@ public class Catalogo extends JFrame {
                                 .append("Precio del producto", modeloDos.getValueAt(i, 3));
                         /*Agregar el documento que contiene el detalle de los productos a la lista*/
                         productos.add(producto);
+                        /**
+                         * @action Agrega el documento con los detalles del producto a la lista de productos para su procesamiento posterior.
+                         * @return for Cada iteración del bucle corresponde a una fila en la tabla del carrito,
+                         * representando un producto distinto seleccionado por el cliente.
+                         */
                     }
 
                     /*Generar un campo "Productos" que tendra la lista dentro de la base de datos*/
@@ -368,6 +428,9 @@ public class Catalogo extends JFrame {
 
                     /*Insertar el documento completo en la colección*/
                     collection.insertOne(detalleDocumento);
+                    /**
+                     * @param insertOne Se inserta el docuemento completo dentro de la coleccion "detalleCompra".
+                     */
 
                     /*Confirmación de la insercion en la base de datos*/
                     System.out.println("Documento insertado: " + detalleDocumento);
@@ -375,16 +438,33 @@ public class Catalogo extends JFrame {
                     /*Obtener la ruta del escritorio*/
                     String ruta = System.getProperty("user.home");
                     String directorio = ruta + File.separator + "Escritorio";
+                    /**
+                     * @param ruta Obtiene la ruta al directorio de inicio del usuario..
+                     * @param directorio Se concatena File.separator + "Escritorio" para formar la ruta al escritorio del usuario.
+                     */
 
                     /*Crear el archivo PDF*/
-                    File archivoPDF = new File(directorio + File.separator + "Factura_0"+detalleCompra.getNumero_pedido()+".pdf");
+                    File archivoPDF = new File(directorio + File.separator + "Factura_"+detalleCompra.getNumero_pedido()+".pdf");
                     PdfWriter.getInstance(pdfDocumento, new FileOutputStream(archivoPDF));
+                    /**
+                     * @param archivoPDF Nuevo documento en formato pdf y con el nombre "Factura_" y el numero que arroge el contadorpdfs
+                     *                   PdfWriter.getInstance(pdfDocumento, new FileOutputStream(archivoPDF)) Esta línea permite que se escriba dentro del docuemento.
+                     */
 
+                    /*Se abre el documento*/
                     pdfDocumento.open();
+
                     Paragraph textoInformacion = new Paragraph();
+                    /**
+                     * @param textoInformacion Es una especie de parrafo que se va llenando con textos que tendrá la factura
+                     */
                     Paragraph textoInformacion2 = new Paragraph();
+                    /**
+                     * @param textoInformacion2 Es una especie de parrafo que se va llenando con textos que tendrá la factura
+                     */
                     textoInformacion2.add("Zapatos Lombardy"+'\n');
                     /*textoInformacion2.add("Cedula: "+ Login.ClientesDatos.getCedulaCliente());*/
+                    textoInformacion2.add("Fecha:"+detalleCompra.getFecha() + '\n');
                     textoInformacion2.add("Nombre: "+ Login.ClientesDatos.getNombreCliente() + '\n');
                     textoInformacion2.add("Apellido: "+ Login.ClientesDatos.getApellidoCliente() + '\n');
                     textoInformacion2.add("Correo: "+ Login.ClientesDatos.getEmailCliente() + '\n' );
@@ -395,6 +475,10 @@ public class Catalogo extends JFrame {
                     table.addCell("Nombre del producto");
                     table.addCell("Cantidad del producto");
                     table.addCell("Precio del producto");
+                    /**
+                     * @param table Tabla que tendrá cada producto que selecciono el cliente con nombre del producto, la cantidad del producto
+                     *              y su precio.
+                     */
 
                     for (int i = 0; i < carritoProducto.getRowCount(); i++) {
                         table.addCell(modeloDos.getValueAt(i, 1).toString());
@@ -402,17 +486,29 @@ public class Catalogo extends JFrame {
                         table.addCell(modeloDos.getValueAt(i, 3).toString());
                     }
                     String totalAPagar = totalPagar.getText();
+                    /**
+                     * @param totalAPagar Total a pagar por todos los productos.
+                     */
                     textoInformacion.add("Total: " + totalAPagar);
                     pdfDocumento.add(table);
                     pdfDocumento.add(textoInformacion);
+                    /**
+                     * @param pdfDocumento Al documento se le añade la tabla y los textos creados,solo se le puede agregar elementos no variables.
+                     */
                     pdfDocumento.close();
                     errorCarrito.setText("Se ha generado adecuadamente el pdf de la compra");
                     System.out.println("PDF creado en la ruta: " + archivoPDF.getAbsolutePath());
 
                 }catch(FileNotFoundException | DocumentException exception){
                     errorCarrito.setText("Error al generar el PDF" + exception.getMessage());
+                    /**
+                     * @param errorCarrito Si el documento no se crea o presenta algun error se presenta el mismo en el JLabel.
+                     */
                 }catch(MongoException exception){
                     errorCarrito.setText("Error al guardar datos en la base de datos");
+                    /**
+                     * @param errorCarrito Si el documento no genera adecuadamente la conexión.
+                     */
                 }
             }
         });

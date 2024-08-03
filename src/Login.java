@@ -20,6 +20,13 @@ public class Login {
     public static String nombreCliente;
     public static String apellidoCliente;
     public static String email;
+
+    /**
+     * Constructor de la clase Login.
+     * Configura el botón de inicio de sesión y gestiona las acciones realizadas al presionar el botón.
+     *
+     * @param frame1 El JFrame que contiene el panel de login.
+     */
     public Login(JFrame frame1) {
         entrarButton.addActionListener(new ActionListener() {
             @Override
@@ -134,26 +141,43 @@ public class Login {
         private static String nombreCliente;
         private static String apellidoCliente;
         private static String email;
+        /**
+         * Establece los datos del cliente.
+         *
+         * @param nombre   Almacena el nombre traído de la base de datos del cliente para la factura.
+         * @param apellido Almacena el apellido traído de la base de datos del cliente para la factura.
+         * @param correo   Almacena el correo traído de la base de datos del cliente para la factura.
+         */
 
-        public static void setCliente(/*String cedula,*/ String nombre, String apellido, String correo) {
-            /*cedulaCliente = String.valueOf(cedula);*/
+        public static void setCliente( String nombre, String apellido, String correo) {
             nombreCliente = nombre;
             apellidoCliente = apellido;
             email = correo;
         }
 
-        /*public static String getCedulaCliente() {
-            return cedulaCliente;
-        }*/
-
+        /**
+         * Obtiene el nombre del cliente.
+         *
+         * @return El nombre del cliente.
+         */
         public static String getNombreCliente() {
             return nombreCliente;
         }
 
+        /**
+         * Obtiene el apellido del cliente.
+         *
+         * @return El apellido del cliente.
+         */
         public static String getApellidoCliente() {
             return apellidoCliente;
         }
 
+        /**
+         * Obtiene el correo electrónico del cliente.
+         *
+         * @return El correo electrónico del cliente.
+         */
         public static String getEmailCliente() {
             return email;
         }
