@@ -1,7 +1,5 @@
 Escuela Politécnica Nacional 
 -
-POO
--
 Autor del proyecto:
 - 
 García Mireya 
