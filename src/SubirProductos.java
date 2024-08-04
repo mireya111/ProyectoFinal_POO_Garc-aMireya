@@ -307,13 +307,25 @@ public class SubirProductos {
                 if (resultados.getSelectedRow() == -1) {
                     errorTabla.setText("No se ha seleccionado ningun producto");
                 } else {
+                    int codigo = Integer.parseInt(codigoProducto.getText().trim());
                     codigoProducto.setText(modelo.getValueAt(resultados.getSelectedRow(),0).toString());
                     nombreProducto.setText(modelo.getValueAt(resultados.getSelectedRow(),1).toString());
                     stock.setText(modelo.getValueAt(resultados.getSelectedRow(),2).toString());
                     precioProducto.setText(modelo.getValueAt(resultados.getSelectedRow(),3).toString());
-                    ruta.setText(modelo.getValueAt(resultados.getSelectedRow(),4).toString());
-                    ImageIcon imagen = (ImageIcon) modelo.getValueAt(resultados.getSelectedRow(), 4);
-                    foto2.setIcon(imagen);
+                    try(MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")){
+                        MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
+                        MongoCollection<Document> collection = database.getCollection("cadaProducto");
+                        /* Realiza las consultas */
+                        Document filtro = new Document("Codigo", codigo);
+                        Document producto = collection.find(filtro).first();
+                        if (producto != null) {
+                            ruta.setText(producto.getString("Imagen"));
+                            ImageIcon imagen = (ImageIcon) modelo.getValueAt(resultados.getSelectedRow(), 4);
+                            foto2.setIcon(imagen);
+                        }
+                    }catch (MongoException ex){
+                        camposVacios.setText("No se conecto a la base de datos " + ex.getMessage());
+                    }
                 }
                 /**
                  * @param  editarProductoButton El bóton hace que la información publicada de la fila seleccionada en la tabla de productos se ponga a disponibilidad para ser modificada
@@ -337,10 +349,11 @@ public class SubirProductos {
                         MongoCollection<Document> collection = database.getCollection("cadaProducto");
 
                         /* Obtener el valor de la celda antes de modificar la fila */
-                        int codigo = Integer.parseInt(codigoProducto.getText().trim());
+                        int codigo = (int) modelo.getValueAt(resultados.getSelectedRow(), 0);
                         String nombre = nombreProducto.getText().trim();
                         int cantidad = Integer.parseInt(stock.getText().trim());
                         Double precio = Double.parseDouble(precioProducto.getText().trim());
+                        String nuevaRutaImagen = ruta.getText().trim();
 
                         /* Buscar el producto en la base de datos */
                         Document filtro = new Document("Codigo", codigo);
@@ -349,7 +362,9 @@ public class SubirProductos {
                         if (producto != null) {
                             /* Obtener la ruta de la imagen existente si no se proporciona una nueva */
                             String rutaImagen = producto.getString("Imagen");
-
+                            if (!nuevaRutaImagen.equals(rutaImagen)) {
+                                rutaImagen = nuevaRutaImagen;
+                            }
 
                             /* Crear documento de actualización */
                             Document actualizacion = new Document("$set", new Document("Nombre_producto", nombre)
@@ -380,6 +395,10 @@ public class SubirProductos {
                             } catch (IOException ex) {
                                 modelo.setValueAt(null, resultados.getSelectedRow(), 4);
                             }
+
+                            /* Mostrar mensaje de éxito */
+                            errorTabla.setText("El producto se ha actualizado correctamente");
+
                         } else {
                             errorTabla.setText("El producto no se encontró en la base de datos");
                         }
@@ -389,6 +408,7 @@ public class SubirProductos {
                 }
             }
         });
+
 
 
         /*Borrar la información para colocar un nuevo producto*/
@@ -412,7 +432,7 @@ public class SubirProductos {
                 frame.pack();
                 frame.setContentPane(new Login(frame).panelLogin);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setSize(800, 600);
+                frame.setSize(700, 400);
                 frame.setVisible(true);
                 frame.setLocationRelativeTo(null);
                 frame1.setVisible(false);

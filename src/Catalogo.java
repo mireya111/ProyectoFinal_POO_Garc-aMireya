@@ -449,6 +449,11 @@ public class Catalogo extends JFrame {
         int mes = cal.get(Calendar.MONTH) + 1;
         int anio = cal.get(Calendar.YEAR);
         String solofecha = dia + "/" + mes + "/" + anio;
+        /*Contador para diferentes pdfs*/
+        contadorPdfs =contadorPdfs + 1;
+        /**
+         * @param contadorPdfs Para que se generen varios pdfs, pdf_1, pdf_2, pdf_3 y así sucesivamente.
+         */
         generarOrden.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -463,11 +468,6 @@ public class Catalogo extends JFrame {
                 detalleCompra.setFecha(solofecha);
                 detalleCompra.setNumero_pedido(contadorNumero);
 
-                /*Contador para diferentes pdfs*/
-                contadorPdfs =contadorPdfs + 1;
-                /**
-                 * @param contadorPdfs Para que se generen varios pdfs, pdf_1, pdf_2, pdf_3 y así sucesivamente.
-                 */
                 detalleCompra.setNumero_pedido(contadorPdfs);
                 try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")){
                     MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
@@ -613,7 +613,7 @@ public class Catalogo extends JFrame {
                 JFrame frame = new JFrame();
                 frame.setContentPane(new Login(frame).panelLogin);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setSize(800, 600);
+                frame.setSize(700, 400);
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
                 frame1.setVisible(false);

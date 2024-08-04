@@ -85,7 +85,7 @@ public class RegistroClientes {
                 frame.pack();
                 frame.setContentPane(new Login(frame).panelLogin);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setSize(1000, 800);
+                frame.setSize(700, 400);
                 frame.setVisible(true);
                 frame.setLocationRelativeTo(null);
                 frame1.setVisible(false);
