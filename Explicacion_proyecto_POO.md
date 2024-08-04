@@ -116,22 +116,19 @@ Aquí se realiza un código que da la oportunidad a los empleados de subir, elim
   Antes de actualizarlo se tiene que seleccionar el botón "Editar producto" para que toda la información del producto que se encuentra en la tabla se presente en los campos donde el usuario ingresa los datos del producto y pueda actualizarlo.
 - Vaciar los campos donde el usuario digita para colocar un nuevo producto, se limpian tanto textos, numeros como imagenes.
 - Regresar hacia la ventana de login.
-![image](https://github.com/user-attachments/assets/aacd6189-feb2-48b0-9ca0-e4cc198d39f9)
-![image](https://github.com/user-attachments/assets/48c281ba-4e10-4a78-9fc7-a56efef64996)
-![image](https://github.com/user-attachments/assets/be6d280d-00e1-4310-bc4e-d8b31c40aea7)
-![image](https://github.com/user-attachments/assets/bf530f05-ecaa-4cea-8e02-83e0d0b7c69e)
-![image](https://github.com/user-attachments/assets/f26c9352-608b-4d21-99df-5604aab56e5e)
-![image](https://github.com/user-attachments/assets/fa727998-0fa6-4e4d-97c1-f25faf16fbf9)
-![image](https://github.com/user-attachments/assets/7a28c87c-3392-412b-9f32-26f510175bf3)
-![image](https://github.com/user-attachments/assets/d5475702-b22b-45ce-aeb7-b703d2ed9ef0)
-![image](https://github.com/user-attachments/assets/590f1c92-5f50-4b1e-bc65-eb40217cc202)
-![image](https://github.com/user-attachments/assets/6fe32287-c893-47cb-a015-36973f9ff95b)
-![image](https://github.com/user-attachments/assets/3d197701-d1e2-4b19-9b17-43d08c031edc)
-![image](https://github.com/user-attachments/assets/982bea02-233c-4d32-8414-b3648aa865b0)
-![image](https://github.com/user-attachments/assets/ea99db35-8a46-422b-8df2-911ddf9ce63b)
-![image](https://github.com/user-attachments/assets/99989d6d-fc31-4e37-b589-f3c06e35b9a1)
-![image](https://github.com/user-attachments/assets/e9e1ad7a-e42b-4e22-a8e2-04ef8e364e35)
-![image](https://github.com/user-attachments/assets/5612f463-45a7-43c5-81bb-510570cce9bb)
+![image](https://github.com/user-attachments/assets/b7706a39-cc3c-4770-a936-62514eec7139)
+![image](https://github.com/user-attachments/assets/9a7c01fa-d0c0-4dd7-a6b3-f5929b7db416)
+![image](https://github.com/user-attachments/assets/b9eeaba8-1999-4f7f-8df0-ee22bf0e30f0)
+![image](https://github.com/user-attachments/assets/2d718fa2-f9d4-4941-9dc1-9a430d05653a)
+![image](https://github.com/user-attachments/assets/9d93d2d5-d320-4225-80c8-fcfef240073d)
+![image](https://github.com/user-attachments/assets/7a5c3aa5-517c-43dd-8a97-f8c6c86b5cbc)
+![image](https://github.com/user-attachments/assets/9ef28521-241a-4a72-877a-bb088004e681)
+![image](https://github.com/user-attachments/assets/af5ca781-040b-4173-8f01-132af8c204aa)
+![image](https://github.com/user-attachments/assets/501ce343-cdd8-4781-a855-72bf0ae7140c)
+![image](https://github.com/user-attachments/assets/9e0de33b-b94e-43cc-9d79-38f503bc34c7)
+![image](https://github.com/user-attachments/assets/3a1e266c-7459-47d6-a818-282a592f29c5)
+![image](https://github.com/user-attachments/assets/59447ec7-fc8a-46e2-98d3-e40be9a55912)
+![image](https://github.com/user-attachments/assets/ebde4d4a-4fe7-4ae1-9dfc-62920418039c)
 
 Catalogo
 - 
@@ -152,22 +149,24 @@ las funciones son agregar productos al carrito, editarlos, modificarlos, elimina
   Se utiliza una librería denominada "itext", que sirve para crear y manipular archivos PDF, RTF, y HTML en Java.
   En esta ocasión se generó un documento en pdf, se le agrego una tabla donde se encuentran los productos seleccionados por el cliente, el total a pagar, sus datos más relevantes, el número de factura y el nombre de la empresa.
   Solo se deben añadir elementos al pdf, a estos elementos se les agrego la información de la factura.  
-![image](https://github.com/user-attachments/assets/2c2a81b3-8aa8-4ed0-a5d8-699136c8ac3d)
-![image](https://github.com/user-attachments/assets/a52e43c8-f1f3-4fc8-a764-0850e0d2e4ff)
-![image](https://github.com/user-attachments/assets/7ad9028c-5f62-4fe0-abe7-3df806f7ca31)
-![image](https://github.com/user-attachments/assets/7b466410-9c91-4659-bbc5-c9c793df8b4d)
-![image](https://github.com/user-attachments/assets/8f95acdf-daa2-42cf-bc3c-781d53f5e2dc)
-![image](https://github.com/user-attachments/assets/66382db8-5dc8-4bf6-9511-416f7cba155e)
-![image](https://github.com/user-attachments/assets/ce783a35-1c40-494b-b9ce-4ef30ac4c4bd)
-![image](https://github.com/user-attachments/assets/1c754b84-fa2b-4c5f-be80-3339c15de2ab)
-![image](https://github.com/user-attachments/assets/8ed45a89-7ff7-4311-baa9-2abbefbf0ff6)
-![image](https://github.com/user-attachments/assets/d2c0ee59-41c3-4273-811d-79e441ed1986)
-![image](https://github.com/user-attachments/assets/cdd035c1-6dde-42ba-9ede-9b1e8dc934fe)
-![image](https://github.com/user-attachments/assets/e09eb304-c0ac-45d3-9d3f-c32469b5d9d2)
-![image](https://github.com/user-attachments/assets/588d107a-19bc-4fcd-b2cd-2c4e00ff4d04)
-![image](https://github.com/user-attachments/assets/b9716492-9bba-493e-8390-110b33e69b8a)
-![image](https://github.com/user-attachments/assets/c6b322cc-08a0-4639-ad17-29da236cde1a)
-![image](https://github.com/user-attachments/assets/76dbd9b2-b0a1-4f90-b57a-ac80e4c3cc63)
+![image](https://github.com/user-attachments/assets/d4dea875-d3dc-442e-826f-1e470f635615)
+![image](https://github.com/user-attachments/assets/83cc03ba-139d-4849-84c7-30da3b110441)
+![image](https://github.com/user-attachments/assets/b7f55d29-6a19-4f7e-8836-69770e3d4370)
+![image](https://github.com/user-attachments/assets/269cb509-722c-441c-a8ad-039f571beddc)
+![image](https://github.com/user-attachments/assets/600d915f-ffed-4f28-ad2e-7b61368db6c3)
+![image](https://github.com/user-attachments/assets/4656976e-2ad6-4906-aad7-3da2a63b0259)
+![image](https://github.com/user-attachments/assets/e9fb79a1-2acb-4d71-baed-f65f831b2772)
+![image](https://github.com/user-attachments/assets/07b94704-88b8-4ba8-9cd5-bd55f04af67e)
+![image](https://github.com/user-attachments/assets/9ff307e4-377e-4621-9903-99252fb126dd)
+![image](https://github.com/user-attachments/assets/36001187-39a1-4317-9068-27d873f103d5)
+![image](https://github.com/user-attachments/assets/9f455f44-6b87-4d11-9deb-a1314955cbd3)
+![image](https://github.com/user-attachments/assets/bd4b9a67-2aa0-4618-b471-e1abf4e6a11d)
+![image](https://github.com/user-attachments/assets/70dc4620-b2e3-4cde-ab81-3c5745880576)
+![image](https://github.com/user-attachments/assets/dde95110-da6d-4fd2-9e88-76ada18f8993)
+![image](https://github.com/user-attachments/assets/69aa826e-45c6-4b3e-8b5d-ea0cac28b8c4)
+![image](https://github.com/user-attachments/assets/501d82ea-a544-4fe9-8ade-506eed2cabe1)
+![image](https://github.com/user-attachments/assets/6acbdaa8-cae8-4044-bb16-76fb4c741ac2)
+
 
   
   
