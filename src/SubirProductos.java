@@ -6,6 +6,7 @@ import org.bson.Document;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -38,26 +39,43 @@ public class SubirProductos {
     private JButton regresar;
     public File selectFile;
     private JFrame frame1;
-    /*Definir el tipo de dato que almacenara cada columna de la tabla*/
-    DefaultTableModel modelo = new DefaultTableModel() {
-        @Override
-        public Class<?> getColumnClass(int column) {
-            if (column == 0){
-                return Integer.class;
-            } else if (column == 1) {
-                return String.class;
-            } else if (column == 2) {
-                return Integer.class;
-            } else if (column == 3) {
-                return Double.class;
-            } else if (column == 4) {
-                return ImageIcon.class;
-            }
-            return null;
-        }
-    };
-
     public SubirProductos(JFrame frame) {
+        /*Definir el tipo de dato que almacenara cada columna de la tabla*/
+        DefaultTableModel modelo = new DefaultTableModel() {
+            @Override
+            public Class<?> getColumnClass(int column) {
+                if (column == 0){
+                    return Integer.class;
+                } else if (column == 1) {
+                    return String.class;
+                } else if (column == 2) {
+                    return Integer.class;
+                } else if (column == 3) {
+                    return Double.class;
+                } else if (column == 4) {
+                    return ImageIcon.class;
+                }
+                return Object.class;
+            }
+        };
+        /*Se añade los nombres de las columnas*/
+        modelo.addColumn("Codigo");
+        modelo.addColumn("Nombre_producto");
+        modelo.addColumn("Cantidad_disponible");
+        modelo.addColumn("Precio");
+        modelo.addColumn("Imagen");
+        resultados.setModel(modelo);
+        /*Asegúrate de que la columna 4 (índice 4) tenga un renderer de ImageIcon*/
+        /*resultados.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                if (value instanceof ImageIcon) {
+                    return new JLabel((ImageIcon) value);
+                } else {
+                    return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                }
+            }
+        });*/
         frame1=frame;
         /*Para acceder a los archivos y que se muestre antes de subir el producto*/
         explorarImagenes.addActionListener(new ActionListener() {
@@ -170,14 +188,12 @@ public class SubirProductos {
                     camposVacios.setText("Se subió satisfactoriamente el producto");
                     /*Para que la fila se agrande*/
                     resultados.setRowHeight(50);
-                    /*Se añade los nombres de las columnas*/
-                    modelo.addColumn("Codigo");
-                    modelo.addColumn("Nombre_producto");
-                    modelo.addColumn("Cantidad_disponible");
-                    modelo.addColumn("Precio");
-                    modelo.addColumn("Imagen");
+
                     /*Seteo del nuevo modelo a la tabla vacía*/
                     resultados.setModel(modelo);
+                    /*Limpia el modelo de la tabla antes de llenar los datos*/
+                    modelo.setRowCount(0);
+
                     /**
                      * Con el "modelo" podemos insertar las diferentes columnas
                      * @param modelo Define cómo se estructuran y manejan los datos que se muestran en la tabla.
@@ -310,61 +326,70 @@ public class SubirProductos {
         modificarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                /*Limpieza de errores*/
+                /* Limpieza de errores */
                 errorTabla.setText("");
                 camposVacios.setText("");
-                if (resultados.getSelectedRow() == -1){
-                    errorTabla.setText("No se ha seleccionado ningun producto");
+                if (resultados.getSelectedRow() == -1) {
+                    errorTabla.setText("No se ha seleccionado ningún producto");
                 } else {
                     try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                         MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
                         MongoCollection<Document> collection = database.getCollection("cadaProducto");
-                        /*Obtener el valor de la celda antes de modificar la fila*/
+
+                        /* Obtener el valor de la celda antes de modificar la fila */
                         int codigo = Integer.parseInt(codigoProducto.getText().trim());
                         String nombre = nombreProducto.getText().trim();
                         int cantidad = Integer.parseInt(stock.getText().trim());
                         Double precio = Double.parseDouble(precioProducto.getText().trim());
-                        String rutaImagen = ruta.getText().trim();
-                        /*En dodne se actualizará*/
-                        Document filtro = new Document("Codigo", codigo);
-                        /*Que se actualizará*/
-                        Document actualizacion = new Document("$set", new Document("Nombre_producto", nombre)
-                                .append("Cantidad_disponible", cantidad)
-                                .append("Precio", precio)
-                                .append("Imagen", rutaImagen));
-                        UpdateResult resultado = collection.updateOne(filtro, actualizacion);
-                        /*Verificar si el producto se modifico*/
-                        System.out.println("Documentos modificados: " + resultado.getModifiedCount());
-                        /*Visualización de la tabla*/
-                        modelo.setValueAt(codigo, resultados.getSelectedRow(), 0);
-                        modelo.setValueAt(nombre, resultados.getSelectedRow(), 1);
-                        modelo.setValueAt(cantidad, resultados.getSelectedRow(), 2);
-                        modelo.setValueAt(precio, resultados.getSelectedRow(), 3);
 
-                        /*Actualiza la imagen en la tabla*/
-                        try {
-                            Image img = ImageIO.read(new File(rutaImagen));
-                            if (img != null) {
-                                /*Se ajusta la imagen*/
-                                ImageIcon imageIcon = new ImageIcon(img.getScaledInstance(100, 100, Image.SCALE_SMOOTH));
-                                modelo.setValueAt(imageIcon, resultados.getSelectedRow(), 4);
-                            } else {
+                        /* Buscar el producto en la base de datos */
+                        Document filtro = new Document("Codigo", codigo);
+                        Document producto = collection.find(filtro).first();
+
+                        if (producto != null) {
+                            /* Obtener la ruta de la imagen existente si no se proporciona una nueva */
+                            String rutaImagen = producto.getString("Imagen");
+
+
+                            /* Crear documento de actualización */
+                            Document actualizacion = new Document("$set", new Document("Nombre_producto", nombre)
+                                    .append("Cantidad_disponible", cantidad)
+                                    .append("Precio", precio)
+                                    .append("Imagen", rutaImagen));
+
+                            UpdateResult resultado = collection.updateOne(filtro, actualizacion);
+
+                            /* Verificar si el producto se modificó */
+                            System.out.println("Documentos modificados: " + resultado.getModifiedCount());
+
+                            /* Actualizar la visualización en la tabla */
+                            modelo.setValueAt(codigo, resultados.getSelectedRow(), 0);
+                            modelo.setValueAt(nombre, resultados.getSelectedRow(), 1);
+                            modelo.setValueAt(cantidad, resultados.getSelectedRow(), 2);
+                            modelo.setValueAt(precio, resultados.getSelectedRow(), 3);
+
+                            /* Actualiza la imagen en la tabla */
+                            try {
+                                Image img = ImageIO.read(new File(rutaImagen));
+                                if (img != null) {
+                                    ImageIcon imageIcon = new ImageIcon(img.getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+                                    modelo.setValueAt(imageIcon, resultados.getSelectedRow(), 4);
+                                } else {
+                                    modelo.setValueAt(null, resultados.getSelectedRow(), 4);
+                                }
+                            } catch (IOException ex) {
                                 modelo.setValueAt(null, resultados.getSelectedRow(), 4);
                             }
-                        } catch (IOException ex) {
-                            modelo.setValueAt(null, resultados.getSelectedRow(), 4);
+                        } else {
+                            errorTabla.setText("El producto no se encontró en la base de datos");
                         }
-                        /**
-                         * Actualiza la imagen en la tabla 'resultados' en la fila seleccionada y en la columna de índice 4.
-                         *
-                         * @param rutaImagen La ruta del archivo de imagen que se debe leer y actualizar en la tabla.
-                         * @param modelo El modelo de la tabla que se va a actualizar.
-                         * @param resultados La tabla en la que se mostrará la imagen actualizada.
-                         */
+                    } catch (Exception ex) {
+                        errorTabla.setText("Error al actualizar el producto: " + ex.getMessage());
                     }
                 }
             }
         });
+
 
         /*Borrar la información para colocar un nuevo producto*/
         borrarInformaciónDelFormularioButton.addActionListener(new ActionListener() {

@@ -5,7 +5,7 @@ public class Compra extends Productos {
     int numero_pedido;
     int cantidadProducto;
     double precioTotal;
-    Date fecha;
+    String fecha;
     /*Constructores*/
     public Compra() {}
     /**
@@ -16,7 +16,7 @@ public class Compra extends Productos {
      * @param precioTotal Precio total de todos los productos escogidos por el cliente.
      * @param fecha La fecha en la que el cliente realizo la compra.
      */
-    public Compra(int numero_pedido, int cantidadProducto, double precioTotal, Date fecha) {
+    public Compra(int numero_pedido, int cantidadProducto, double precioTotal, String fecha) {
         this.numero_pedido = numero_pedido;
         this.cantidadProducto = cantidadProducto;
         this.precioTotal = precioTotal;
@@ -28,7 +28,7 @@ public class Compra extends Productos {
         this.numero_pedido = numero_pedido;
         this.cantidadProducto = cantidadProducto;
         this.precioTotal = precioTotal;
-        this.fecha = fecha;
+        this.fecha = String.valueOf(fecha);
     }
     /*Setters y getters*/
 
@@ -56,11 +56,11 @@ public class Compra extends Productos {
         this.precioTotal = precioTotal;
     }
 
-    public Date getFecha() {
+    public String getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(String fecha) {
         this.fecha = fecha;
     }
 }

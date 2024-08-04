@@ -1,4 +1,5 @@
-import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
 import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import com.mongodb.client.result.UpdateResult;
@@ -6,18 +7,18 @@ import org.bson.Document;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+
 
 public class Catalogo extends JFrame {
     public JPanel catalogoProductos;
@@ -38,6 +39,7 @@ public class Catalogo extends JFrame {
     private double contadorPrecio = 0;
     private JFrame frame1;
     private int contadorPdfs = 0;
+    private int contadorNumero = 0;
 
     DefaultTableModel modelo = new DefaultTableModel() {
         @Override
@@ -218,11 +220,12 @@ public class Catalogo extends JFrame {
 
             }
         });
+
         editarProducto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(carritoProducto.getSelectedRow() == -1){
-                    confirmacionErrores.setText("No se encuentra selecccionado ningun producto, por favor seleccione uno");
+                    confirmacionErrores.setText("No se encuentra selecccionado ningun producto, por favor seleccione uno.");
                 }else {
                     cantidadCliente.setText(modeloDos.getValueAt(carritoProducto.getSelectedRow(), 2).toString());
                 }
@@ -232,6 +235,7 @@ public class Catalogo extends JFrame {
              *                        En el lugar donde el usuario ingresa la cantidad que desea se presentan los valores de la fila seleccionada propensa ha ser modificada.
              */
         });
+
         actualizarPedido.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -246,6 +250,9 @@ public class Catalogo extends JFrame {
                 if (carritoProducto.getSelectedRow() == -1) {
                     confirmacionErrores.setText("No se encuentra seleccionado ningún producto, por favor seleccione uno.");
                 } else {
+                    /*Obtener informacion del catalogo para validarla*/
+                    int cantidadDelProducto = Integer.parseInt(modelo.getValueAt(catalogosProductos.getSelectedRow(), 2).toString());
+
                     /*Validacion del campo que almacena la cantidad solicitada, no debe estar vacío*/
                     if (cantidadCliente.getText().isEmpty()) {
                         confirmacionErrores.setText("El campo de cantidad no puede estar vacío.");
@@ -272,6 +279,12 @@ public class Catalogo extends JFrame {
                      * @param  cantidadSolicitada Almacena el valor entero que representa la cantidad de unidades solicitadas por el cliente.
                      * @param confirmacionErrores Almacena el error si lo ingresado por el usuario es un caracter no numerico
                      */
+
+                    /*Validacion para que no se exceda el valor del estock*/
+                    if (cantidadSolicitada > cantidadDelProducto) {
+                        confirmacionErrores.setText("La cantidad solicitada excede la cantidad disponible.");
+                        return;
+                    }
 
                     /*Obtener la información del producto seleccionado en la tabla carritoProducto*/
                     int codigoDelProductoCarrito = Integer.parseInt(modeloDos.getValueAt(carritoProducto.getSelectedRow(), 0).toString());
@@ -321,7 +334,7 @@ public class Catalogo extends JFrame {
                                  * @param precioNuevoPorProducto Precio total deacuerdo a la cantidad deseada por producto seleccionado.
                                  */
 
-                                System.out.println("Precio nuevo del producto: "+ precioNuevoPorProducto);
+                                System.out.println("Precio nuevo del producto: " + precioNuevoPorProducto);
 
                                 /*Actualizacion en la base de datos*/
                                 Document filtro = new Document("Codigo", codigoDelProductoCarrito);
@@ -341,13 +354,23 @@ public class Catalogo extends JFrame {
                                 modeloDos.setValueAt(compraNueva.getCantidadProducto(), carritoProducto.getSelectedRow(), 2);
                                 modeloDos.setValueAt(precioNuevoPorProducto, carritoProducto.getSelectedRow(), 3);
                                 confirmacionErrores.setText("Se ha modificado el carrito en el producto " + nombreDelProducto);
+
+                                /*Recalcular el total a pagar*/
+                                double totalPagarValor = 0.0;
+                                for (int i = 0; i < modeloDos.getRowCount(); i++) {
+                                    totalPagarValor += Double.parseDouble (modeloDos.getValueAt(i, 3).toString());
+                                }
+
+                                /*Actualizar el JLabel totalPagar*/
+                                String totalPagarFormateado = String.format("%.2f", totalPagarValor).replace(".", ",");
+                                totalPagar.setText(totalPagarFormateado);
+
                                 /**
                                  * @return La tabla con las modificaciones realizadas, tanto en la tabla del catalogo como la del carrito.
                                  */
                                 break;
                             }
                         }
-
                         if (!productoEncontrado) {
                             confirmacionErrores.setText("El producto seleccionado en el carrito no se encuentra en la base de datos.");
                         }
@@ -361,32 +384,91 @@ public class Catalogo extends JFrame {
         eliminarProducto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(carritoProducto.getSelectedRow()==-1){
-                    errorCarrito.setText("Para eliminar necesita seleccionar un producto del carrito");
-                }else{
-                    /*Eliminar la fila de la tabla*/
-                    modeloDos.removeRow(carritoProducto.getSelectedRow());
-                    errorCarrito.setText("Se ha eliminado correctamente");
+                if (carritoProducto.getSelectedRow() == -1) {
+                    errorCarrito.setText("Para eliminar necesita seleccionar un producto del carrito.");
+                } else {
+                    /*Obtener la información del producto seleccionado en la tabla carritoProducto*/
+                    int codigoDelProductoCarrito = Integer.parseInt(modeloDos.getValueAt(carritoProducto.getSelectedRow(), 0).toString());
+                    String nombreDelProducto = modeloDos.getValueAt(carritoProducto.getSelectedRow(), 1).toString();
+                    int cantidadAnteriorCarrito = Integer.parseInt(modeloDos.getValueAt(carritoProducto.getSelectedRow(), 2).toString());
+                    double precioEliminar = Double.parseDouble(modeloDos.getValueAt(carritoProducto.getSelectedRow(), 3).toString().replace(",", "."));
+
+                    /*Línea de conexión*/
+                    try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
+                        MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
+                        MongoCollection<Document> collection = database.getCollection("cadaProducto");
+
+                        /*Realiza las consultas*/
+                        Document filtro = new Document("Codigo", codigoDelProductoCarrito);
+                        Document documento = collection.find(filtro).first();
+
+                        if (documento != null) {
+                            String nombre = documento.getString("Nombre_producto");
+
+                            if (nombre != null && nombre.equals(nombreDelProducto)) {
+                                /*Cantidad anterior del producto*/
+                                int cantidadAnteriorCatalogo = documento.getInteger("Cantidad_disponible");
+                                int cantidadAnterior = cantidadAnteriorCatalogo + cantidadAnteriorCarrito;
+
+                                /*Actualización en la base de datos*/
+                                Document actualizacion = new Document("$set", new Document("Cantidad_disponible", cantidadAnterior));
+                                UpdateResult resultado = collection.updateOne(filtro, actualizacion);
+                                // Verificar si el producto se modificó
+                                System.out.println("Documentos modificados: " + resultado.getModifiedCount());
+
+                                /*Establecer precios*/
+                                double precioAnterior = Double.parseDouble(totalPagar.getText().replace(",", "."));
+                                double precioTotal = precioAnterior - precioEliminar;
+                                /*Formatear el precio total con dos decimales*/
+                                String precioFormateado = String.format("%.2f", precioTotal).replace(".", ",");
+                                totalPagar.setText(precioFormateado);
+
+                                /*Eliminar la fila de la tabla*/
+                                modelo.setValueAt(cantidadAnterior, catalogosProductos.getSelectedRow(), 2);
+                                modeloDos.removeRow(carritoProducto.getSelectedRow());
+                                errorCarrito.setText("Se ha eliminado correctamente");
+                            } else {
+                                confirmacionErrores.setText("El nombre del producto no coincide.");
+                            }
+                        } else {
+                            confirmacionErrores.setText("El producto no se encontró en la base de datos.");
+                        }
+                    } catch (MongoException ex) {
+                        confirmacionErrores.setText("Error con la base de datos: " + ex.getMessage());
+                    } catch (Exception ex) {
+                        confirmacionErrores.setText("La actualización del producto seleccionado no fue correcta: " + ex.getMessage());
+                    }
                 }
-                /**
-                 * @param errorCarrito  Si no se selecciona una fila se presentará un -1 y se escribira un error en JLabel, también se confirma la eliminación exitosa de la fila (producto que se desea comprar)
-                 */
             }
         });
+        /*Solo se coloque la fecha, no la hora ni la zona horaria*/
+        Date fecha = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fecha);
+        int dia = cal.get(Calendar.DAY_OF_MONTH);
+        int mes = cal.get(Calendar.MONTH) + 1;
+        int anio = cal.get(Calendar.YEAR);
+        String solofecha = dia + "/" + mes + "/" + anio;
         generarOrden.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 /*Para la generación del pdf*/
                 com.itextpdf.text.Document pdfDocumento = new com.itextpdf.text.Document();
+
+                /*Paera el numero del pedido*/
+                contadorNumero = contadorNumero + 1;
+
                 /*Crear un objeto y setear los valores*/
                 Compra detalleCompra = new Compra();
-                detalleCompra.setFecha(new Date());
-                int numeroLimite = 1;
-                contadorPdfs+=numeroLimite;
+                detalleCompra.setFecha(solofecha);
+                detalleCompra.setNumero_pedido(contadorNumero);
+
+                /*Contador para diferentes pdfs*/
+                contadorPdfs =contadorPdfs + 1;
                 /**
                  * @param contadorPdfs Para que se generen varios pdfs, pdf_1, pdf_2, pdf_3 y así sucesivamente.
                  */
-                detalleCompra.setNumero_pedido(numeroLimite);
+                detalleCompra.setNumero_pedido(contadorPdfs);
                 try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")){
                     MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
                     MongoCollection<Document> collection = database.getCollection("detalleCompra");
@@ -450,7 +532,13 @@ public class Catalogo extends JFrame {
                      * @param archivoPDF Nuevo documento en formato pdf y con el nombre "Factura_" y el numero que arroge el contadorpdfs
                      *                   PdfWriter.getInstance(pdfDocumento, new FileOutputStream(archivoPDF)) Esta línea permite que se escriba dentro del docuemento.
                      */
+                    /*Cargar una fuente en negrilla*/
 
+                    // Crear una fuente en negrilla
+                    com.itextpdf.text.Font font1 = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+                    /**
+                     * @param font1 Fuente, tamaño y la oportunidad de que el texto se encuentre en negrilla
+                     */
                     /*Se abre el documento*/
                     pdfDocumento.open();
 
@@ -462,13 +550,18 @@ public class Catalogo extends JFrame {
                     /**
                      * @param textoInformacion2 Es una especie de parrafo que se va llenando con textos que tendrá la factura
                      */
-                    textoInformacion2.add("Zapatos Lombardy"+'\n');
-                    /*textoInformacion2.add("Cedula: "+ Login.ClientesDatos.getCedulaCliente());*/
-                    textoInformacion2.add("Fecha:"+detalleCompra.getFecha() + '\n');
-                    textoInformacion2.add("Nombre: "+ Login.ClientesDatos.getNombreCliente() + '\n');
-                    textoInformacion2.add("Apellido: "+ Login.ClientesDatos.getApellidoCliente() + '\n');
-                    textoInformacion2.add("Correo: "+ Login.ClientesDatos.getEmailCliente() + '\n' );
-                    textoInformacion2.add("Numero de la compra: "+detalleCompra.getNumero_pedido() + '\n');
+
+                    textoInformacion2.add(new Paragraph("Zapato Mart", font1));
+                    textoInformacion2.add(new Paragraph("Fecha: ", font1));
+                    textoInformacion2.add(detalleCompra.getFecha() + '\n');
+                    textoInformacion2.add(new Paragraph("Nombre: ", font1));
+                    textoInformacion2.add(Login.ClientesDatos.getNombreCliente() + '\n');
+                    textoInformacion2.add(new Paragraph("Apellido: ", font1));
+                    textoInformacion2.add(Login.ClientesDatos.getApellidoCliente() + '\n');
+                    textoInformacion2.add(new Paragraph("Correo: ", font1));
+                    textoInformacion2.add(Login.ClientesDatos.getEmailCliente() + '\n');
+                    textoInformacion2.add(new Paragraph("Numero de la compra: ", font1));
+                    textoInformacion2.add(String.valueOf(detalleCompra.getNumero_pedido() + '\n'));
                     pdfDocumento.add(textoInformacion2);
 
                     PdfPTable table = new PdfPTable(3);
@@ -489,7 +582,8 @@ public class Catalogo extends JFrame {
                     /**
                      * @param totalAPagar Total a pagar por todos los productos.
                      */
-                    textoInformacion.add("Total: " + totalAPagar);
+                    textoInformacion.add(new Paragraph("Total: ", font1));
+                    textoInformacion.add(totalAPagar);
                     pdfDocumento.add(table);
                     pdfDocumento.add(textoInformacion);
                     /**
@@ -512,6 +606,7 @@ public class Catalogo extends JFrame {
                 }
             }
         });
+
         atras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
