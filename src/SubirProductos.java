@@ -297,35 +297,55 @@ public class SubirProductos {
             }
         });
 
-        /*Mover la información de la tabla a el formulario para su modificacion*/
         editarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                /*Limpieza de errores*/
+                // Limpieza de errores
                 errorTabla.setText("");
                 camposVacios.setText("");
-                if (resultados.getSelectedRow() == -1) {
-                    errorTabla.setText("No se ha seleccionado ningun producto");
-                } else {
-                    int codigo = Integer.parseInt(codigoProducto.getText().trim());
-                    codigoProducto.setText(modelo.getValueAt(resultados.getSelectedRow(),0).toString());
-                    nombreProducto.setText(modelo.getValueAt(resultados.getSelectedRow(),1).toString());
-                    stock.setText(modelo.getValueAt(resultados.getSelectedRow(),2).toString());
-                    precioProducto.setText(modelo.getValueAt(resultados.getSelectedRow(),3).toString());
-                    try(MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")){
+
+                // Verificar si se ha seleccionado una fila en la tabla
+                int selectedRow = resultados.getSelectedRow();
+                if (selectedRow == -1) {
+                    errorTabla.setText("No se ha seleccionado ningún producto");
+                    return;
+                }
+
+                // Obtener los valores de la fila seleccionada
+                try {
+                    String codigo = modelo.getValueAt(selectedRow, 0).toString();
+                    String nombre = modelo.getValueAt(selectedRow, 1).toString();
+                    String stockValue = modelo.getValueAt(selectedRow, 2).toString();
+                    String precio = modelo.getValueAt(selectedRow, 3).toString();
+
+                    // Asignar los valores a los campos de texto
+                    codigoProducto.setText(codigo);
+                    nombreProducto.setText(nombre);
+                    stock.setText(stockValue);
+                    precioProducto.setText(precio);
+
+                    int codigoInt = Integer.parseInt(codigo.trim());
+
+                    // Conectar a MongoDB y buscar el producto
+                    try (MongoClient mongoClient = MongoClients.create("mongodb+srv://mireya:Nena1112004@cluster0.z9ytrsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")) {
                         MongoDatabase database = mongoClient.getDatabase("Proyectofinalpoo");
                         MongoCollection<Document> collection = database.getCollection("cadaProducto");
-                        /* Realiza las consultas */
-                        Document filtro = new Document("Codigo", codigo);
+
+                        Document filtro = new Document("Codigo", codigoInt);
                         Document producto = collection.find(filtro).first();
+
                         if (producto != null) {
                             ruta.setText(producto.getString("Imagen"));
-                            ImageIcon imagen = (ImageIcon) modelo.getValueAt(resultados.getSelectedRow(), 4);
+                            ImageIcon imagen = (ImageIcon) modelo.getValueAt(selectedRow, 4);
                             foto2.setIcon(imagen);
                         }
-                    }catch (MongoException ex){
-                        camposVacios.setText("No se conecto a la base de datos " + ex.getMessage());
+                    } catch (MongoException ex) {
+                        camposVacios.setText("No se conectó a la base de datos: " + ex.getMessage());
                     }
+                } catch (NumberFormatException ex) {
+                    errorTabla.setText("El código del producto no es válido");
+                } catch (ClassCastException ex) {
+                    errorTabla.setText("Error al convertir la imagen");
                 }
                 /**
                  * @param  editarProductoButton El bóton hace que la información publicada de la fila seleccionada en la tabla de productos se ponga a disponibilidad para ser modificada
